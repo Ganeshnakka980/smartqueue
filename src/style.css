@@ -81,9 +81,27 @@
   border: none !important;
 }
 
-/* Map container glassmorphism fixes */
+/* Map container glassmorphism & layout fixes */
 .leaflet-container {
   font-family: inherit;
   z-index: 1;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 400px;
+  background: #0f172a !important; /* Dark slate background fallback */
 }
+
+/* Ensure Leaflet tile container and images are visible */
+.leaflet-tile-container img,
+.leaflet-tile {
+  visibility: visible !important;
+  opacity: 1 !important;
+  max-width: none !important;
+}
+
+/* OpenStreetMap tile styling for dark mode */
+.dark .leaflet-tile {
+  filter: brightness(0.7) invert(1) contrast(2.5) hue-rotate(200deg) saturate(0.4);
+}
+
 

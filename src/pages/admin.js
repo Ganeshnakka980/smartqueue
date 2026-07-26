@@ -6,6 +6,7 @@ import { modal } from '../components/modal'
 import { sidebar } from '../components/sidebar'
 import { skeletons } from '../components/skeletons'
 import { supabase } from '../services/supabase'
+import { geocodeAddress, geocodeExistingBranches } from '../services/geocoding'
 import Chart from 'chart.js/auto'
 import gsap from 'gsap'
 
@@ -214,28 +215,49 @@ export const admin = {
 
       if (error) throw error
 
-      const listHTML = branches.map(b => `
-        <div class="glass-card p-6 rounded-2xl border border-slate-200/40 dark:border-slate-800/30 flex items-center justify-between">
-          <div>
-            <h4 class="font-bold text-slate-800 dark:text-white text-base">${b.name}</h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${b.address}</p>
+      const listHTML = branches.map(b => {
+        const hasCoords = b.latitude !== null && b.longitude !== null && b.latitude !== undefined && b.longitude !== undefined
+        const coordsBadge = hasCoords
+          ? `<span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">📍 ${parseFloat(b.latitude).toFixed(4)}, ${parseFloat(b.longitude).toFixed(4)}</span>`
+          : `<span class="text-[11px] font-semibold text-amber-600 dark:text-amber-400">⚠️ Coordinates Pending</span>`
+
+        return `
+          <div class="glass-card p-6 rounded-2xl border border-slate-200/40 dark:border-slate-800/30 flex flex-col justify-between gap-4">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <h4 class="font-bold text-slate-800 dark:text-white text-base truncate">${b.name}</h4>
+                <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full bg-success/10 text-success border border-success/20">
+                  ${b.status}
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">${b.address}</p>
+              <div>${coordsBadge}</div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200/30 dark:border-slate-800/30">
+              <button class="btn-edit-branch px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer" data-id="${b.id}" data-name="${b.name}" data-address="${b.address}" data-status="${b.status}">
+                ✏️ Edit & Geocode
+              </button>
+            </div>
           </div>
-          <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full bg-success/10 text-success border border-success/20">
-            ${b.status}
-          </span>
-        </div>
-      `).join('')
+        `
+      }).join('')
 
       return `
         <div class="max-w-4xl mx-auto">
-          <div class="mb-8 flex items-center justify-between">
+          <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
               <h1 class="text-2xl font-black text-slate-900 dark:text-white">Branch Management</h1>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Configure corporate locations and branches.</p>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Configure corporate locations and automatic geocoding.</p>
             </div>
-            <button id="add-branch-btn" class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all cursor-pointer">
-              Add Branch
-            </button>
+            <div class="flex items-center gap-3">
+              <button id="geocode-branches-btn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold shadow-md transition-all cursor-pointer flex items-center gap-1.5">
+                🌐 Auto-Geocode Existing
+              </button>
+              <button id="add-branch-btn" class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all cursor-pointer">
+                + Add Branch
+              </button>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -625,6 +647,7 @@ export const admin = {
    * Initialize Branch Management Events
    */
   initBranches() {
+    // Add Branch Button
     const addBtn = document.getElementById('add-branch-btn')
     if (addBtn) {
       addBtn.addEventListener('click', () => {
@@ -634,35 +657,161 @@ export const admin = {
             <div class="space-y-4">
               <div>
                 <label for="new-branch-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Branch Name</label>
-                <input type="text" id="new-branch-name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-250 outline-none focus:border-primary">
+                <input type="text" id="new-branch-name" required placeholder="e.g. Andheri West Hub" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-250 outline-none focus:border-primary">
               </div>
               <div>
-                <label for="new-branch-addr" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Address</label>
-                <input type="text" id="new-branch-addr" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-250 outline-none focus:border-primary">
+                <label for="new-branch-addr" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Physical Address</label>
+                <input type="text" id="new-branch-addr" required placeholder="e.g. SV Road, Andheri West, Mumbai, 400058" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-250 outline-none focus:border-primary">
+                <p class="text-[11px] text-slate-400 mt-1">🌐 Coordinates will be automatically converted from this address.</p>
               </div>
             </div>
           `,
-          confirmText: 'Create Branch',
+          confirmText: 'Create & Geocode Branch',
           onConfirm: async () => {
             const name = document.getElementById('new-branch-name').value.trim()
             const address = document.getElementById('new-branch-addr').value.trim()
 
-            if (!name || !address) return
+            if (!name || !address) {
+              toast.error('Branch Name and Address are required.')
+              return
+            }
 
             try {
+              toast.info('Auto-geocoding address...')
+              const coords = await geocodeAddress(address)
+
+              const newBranchObj = {
+                name,
+                address,
+                status: 'active',
+                latitude: coords ? coords.latitude : null,
+                longitude: coords ? coords.longitude : null
+              }
+
               const { error } = await supabase
                 .from('branches')
-                .insert({ name, address, status: 'active' })
+                .insert(newBranchObj)
 
               if (error) throw error
-              toast.success('Branch created successfully!')
+
+              if (coords) {
+                toast.success(`Branch created & auto-geocoded to [${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}]!`)
+              } else {
+                toast.warning('Branch created! Note: Could not auto-determine coordinates for address.')
+              }
+
               router.navigate('/admin/branches')
             } catch (err) {
+              console.error('Create branch error:', err)
               toast.error('Failed to create branch.')
               throw err
             }
           }
         })
+      })
+    }
+
+    // Edit Branch Buttons
+    const editBtns = document.querySelectorAll('.btn-edit-branch')
+    editBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id')
+        const currentName = btn.getAttribute('data-name')
+        const currentAddr = btn.getAttribute('data-address')
+        const currentStatus = btn.getAttribute('data-status')
+
+        modal.show({
+          title: `Edit Branch: ${currentName}`,
+          bodyHTML: `
+            <div class="space-y-4">
+              <div>
+                <label for="edit-branch-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Branch Name</label>
+                <input type="text" id="edit-branch-name" value="${currentName}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-250 outline-none focus:border-primary">
+              </div>
+              <div>
+                <label for="edit-branch-addr" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Address</label>
+                <input type="text" id="edit-branch-addr" value="${currentAddr}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-250 outline-none focus:border-primary">
+                <p class="text-[11px] text-slate-400 mt-1">Updating address automatically refreshes coordinates.</p>
+              </div>
+              <div>
+                <label for="edit-branch-status" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Status</label>
+                <select id="edit-branch-status" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-250 outline-none focus:border-primary">
+                  <option value="active" ${currentStatus === 'active' ? 'selected' : ''}>Active</option>
+                  <option value="inactive" ${currentStatus === 'inactive' ? 'selected' : ''}>Inactive</option>
+                </select>
+              </div>
+            </div>
+          `,
+          confirmText: 'Save & Update Geocode',
+          onConfirm: async () => {
+            const name = document.getElementById('edit-branch-name').value.trim()
+            const address = document.getElementById('edit-branch-addr').value.trim()
+            const status = document.getElementById('edit-branch-status').value
+
+            if (!name || !address) return
+
+            try {
+              let coords = null
+              if (address !== currentAddr) {
+                toast.info('Re-geocoding updated address...')
+                coords = await geocodeAddress(address)
+              }
+
+              const updatePayload = {
+                name,
+                address,
+                status
+              }
+              if (coords) {
+                updatePayload.latitude = coords.latitude
+                updatePayload.longitude = coords.longitude
+              }
+
+              const { error } = await supabase
+                .from('branches')
+                .update(updatePayload)
+                .eq('id', id)
+
+              if (error) throw error
+
+              toast.success('Branch details and geocoding updated!')
+              router.navigate('/admin/branches')
+            } catch (err) {
+              console.error('Update branch error:', err)
+              toast.error('Failed to update branch.')
+              throw err
+            }
+          }
+        })
+      })
+    })
+
+    // Batch Auto-Geocode Existing Branches Button
+    const geocodeBtn = document.getElementById('geocode-branches-btn')
+    if (geocodeBtn) {
+      geocodeBtn.addEventListener('click', async () => {
+        try {
+          toast.info('Starting auto-geocoding process for missing branches...')
+          geocodeBtn.disabled = true
+          geocodeBtn.textContent = '⏳ Geocoding...'
+          
+          const result = await geocodeExistingBranches(supabase)
+          if (result.success) {
+            if (result.total === 0) {
+              toast.info('All existing branches already have valid coordinates!')
+            } else {
+              toast.success(`Auto-geocoded ${result.updated} out of ${result.total} missing branches!`)
+              router.navigate('/admin/branches')
+            }
+          } else {
+            toast.error(`Geocoding error: ${result.error}`)
+          }
+        } catch (err) {
+          toast.error('Failed to execute auto-geocoding.')
+        } finally {
+          geocodeBtn.disabled = false
+          geocodeBtn.textContent = '🌐 Auto-Geocode Existing'
+        }
       })
     }
   },

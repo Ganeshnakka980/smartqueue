@@ -177,7 +177,11 @@ export const router = {
     if (query) {
       hash += `?${query}`
     }
-    window.location.hash = hash
+    if (window.location.hash === hash) {
+      this.handleRouting()
+    } else {
+      window.location.hash = hash
+    }
   },
 
   /**

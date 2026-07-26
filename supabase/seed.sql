@@ -15,7 +15,7 @@ INSERT INTO auth.users (
     raw_user_meta_data, 
     aud, 
     role, 
-    created_at, 
+    created_at, ""
     updated_at
 )
 VALUES (
@@ -54,7 +54,7 @@ VALUES (
     crypt('Password123', gen_salt('bf')),
     now(),
     '{"provider": "email", "providers": ["email"]}',
-    '{"full_name": "Counter Staff 1", "role": "staff"}',
+    '{"full_name": "Counter Staff 1", "role": "staff", "organization_id": "00000000-0000-0000-0000-000000000000", "branch_id": "d4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4"}',
     'authenticated',
     'authenticated',
     now(),
@@ -134,3 +134,32 @@ INSERT INTO public.queues (
 (gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', '07070707-0707-0707-0707-070707070707', '11111111-1111-1111-1111-111111111111', 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', 'A-101', 1, 'completed', 'normal', now() - interval '2 hours', now() - interval '1 hour 40 minutes', now() - interval '2 hours 15 minutes'),
 (gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', '07070707-0707-0707-0707-070707070707', '11111111-1111-1111-1111-111111111111', NULL, 'A-102', 2, 'completed', 'vip', now() - interval '1 hour 40 minutes', now() - interval '1 hour 15 minutes', now() - interval '1 hour 45 minutes')
 ON CONFLICT (id) DO NOTHING;
+
+-- 6. Explicitly update profiles table to ensure organization_id and branch_id are set correctly
+UPDATE public.profiles
+SET organization_id = '00000000-0000-0000-0000-000000000000',
+    branch_id = 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4'
+WHERE id = 'b2b2b2b2-b2b2-b2b2-b2b2-b2b2b2b2b2b2';
+
+-- 7. Seed Queue tickets for today for Downtown Branch (d4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4) so staff has active queue data
+-- Today Completed
+INSERT INTO public.queues (
+    id, branch_id, service_id, counter_id, token_number, sequence_number, 
+    status, priority, called_at, completed_at, created_at, organization_id
+) VALUES
+(gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', 'f6f6f6f6-f6f6-f6f6-f6f6-f6f6f6f6f6f6', '11111111-1111-1111-1111-111111111111', 'G-101', 1, 'completed', 'normal', now() - interval '3 hours', now() - interval '2 hours 50 minutes', now() - interval '3 hours 5 minutes', '00000000-0000-0000-0000-000000000000'),
+(gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', 'f6f6f6f6-f6f6-f6f6-f6f6-f6f6f6f6f6f6', '11111111-1111-1111-1111-111111111111', 'G-102', 2, 'completed', 'senior', now() - interval '2 hours', now() - interval '1 hour 45 minutes', now() - interval '2 hours 10 minutes', '00000000-0000-0000-0000-000000000000'),
+(gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', '08080808-0808-0808-0808-080808080808', '11111111-1111-1111-1111-111111111111', 'C-101', 1, 'completed', 'normal', now() - interval '1 hour', now() - interval '52 minutes', now() - interval '1 hour 5 minutes', '00000000-0000-0000-0000-000000000000'),
+(gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', '08080808-0808-0808-0808-080808080808', '11111111-1111-1111-1111-111111111111', 'C-102', 2, 'completed', 'vip', now() - interval '45 minutes', now() - interval '38 minutes', now() - interval '48 minutes', '00000000-0000-0000-0000-000000000000'),
+(gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', 'f6f6f6f6-f6f6-f6f6-f6f6-f6f6f6f6f6f6', '11111111-1111-1111-1111-111111111111', 'G-103', 3, 'skipped', 'normal', now() - interval '30 minutes', NULL, now() - interval '35 minutes', '00000000-0000-0000-0000-000000000000');
+
+-- Today Waiting
+INSERT INTO public.queues (
+    id, branch_id, service_id, counter_id, token_number, sequence_number, 
+    status, priority, created_at, organization_id
+) VALUES
+(gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', 'f6f6f6f6-f6f6-f6f6-f6f6-f6f6f6f6f6f6', NULL, 'G-104', 4, 'waiting', 'normal', now() - interval '15 minutes', '00000000-0000-0000-0000-000000000000'),
+(gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', 'f6f6f6f6-f6f6-f6f6-f6f6-f6f6f6f6f6f6', NULL, 'G-105', 5, 'waiting', 'emergency', now() - interval '10 minutes', '00000000-0000-0000-0000-000000000000'),
+(gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', '08080808-0808-0808-0808-080808080808', NULL, 'C-103', 3, 'waiting', 'vip', now() - interval '8 minutes', '00000000-0000-0000-0000-000000000000'),
+(gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', 'f6f6f6f6-f6f6-f6f6-f6f6-f6f6f6f6f6f6', NULL, 'G-106', 6, 'waiting', 'senior', now() - interval '5 minutes', '00000000-0000-0000-0000-000000000000'),
+(gen_random_uuid(), 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', '08080808-0808-0808-0808-080808080808', NULL, 'C-104', 4, 'waiting', 'normal', now() - interval '2 minutes', '00000000-0000-0000-0000-000000000000');

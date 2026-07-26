@@ -1,6 +1,7 @@
 import { authService } from '../services/auth'
 import { router } from '../router'
 import { toast } from '../components/toast'
+import { queueService } from '../services/queue'
 import gsap from 'gsap'
 
 export const auth = {
@@ -120,6 +121,23 @@ export const auth = {
               </select>
             </div>
 
+            <!-- Organization & Branch Dropdowns (Shown for Staff only) -->
+            <div id="org-branch-selection-container" class="space-y-4 hidden">
+              <div>
+                <label for="reg-org" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Select Organization</label>
+                <select id="reg-org" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-850 dark:text-slate-200 cursor-pointer">
+                  <option value="">-- Choose Organization --</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="reg-branch" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Select Branch</label>
+                <select id="reg-branch" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-850 dark:text-slate-200 cursor-pointer" disabled>
+                  <option value="">-- Choose Branch --</option>
+                </select>
+              </div>
+            </div>
+
             <button type="submit" id="reg-submit" class="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-base shadow-lg hover:shadow-primary/25 focus:ring-4 focus:ring-primary/20 transition-all flex items-center justify-center gap-2 cursor-pointer mt-2">
               Create Account
             </button>
@@ -210,12 +228,67 @@ export const auth = {
 
     // Bind Register Submission
     if (registerForm) {
+      const roleSelect = document.getElementById('reg-role')
+      const orgBranchContainer = document.getElementById('org-branch-selection-container')
+      const orgSelect = document.getElementById('reg-org')
+      const branchSelect = document.getElementById('reg-branch')
+
+      if (roleSelect && orgBranchContainer) {
+        roleSelect.addEventListener('change', async () => {
+          const isStaff = roleSelect.value === 'staff'
+          if (isStaff) {
+            orgBranchContainer.classList.remove('hidden')
+            orgSelect.required = true
+            branchSelect.required = true
+            
+            try {
+              orgSelect.innerHTML = '<option value="">Loading organizations...</option>'
+              const orgs = await queueService.getOrganizations()
+              orgSelect.innerHTML = '<option value="">-- Choose Organization --</option>' + 
+                orgs.map(o => `<option value="${o.id}">${o.name}</option>`).join('')
+            } catch (e) {
+              console.error(e)
+              toast.error('Failed to load organizations.')
+            }
+          } else {
+            orgBranchContainer.classList.add('hidden')
+            orgSelect.required = false
+            branchSelect.required = false
+            orgSelect.value = ''
+            branchSelect.value = ''
+            branchSelect.disabled = true
+          }
+        })
+
+        orgSelect.addEventListener('change', async () => {
+          const orgId = orgSelect.value
+          if (!orgId) {
+            branchSelect.innerHTML = '<option value="">-- Choose Branch --</option>'
+            branchSelect.disabled = true
+            return
+          }
+
+          try {
+            branchSelect.disabled = false
+            branchSelect.innerHTML = '<option value="">Loading branches...</option>'
+            const branches = await queueService.getBranchesByOrganization(orgId)
+            branchSelect.innerHTML = '<option value="">-- Choose Branch --</option>' +
+              branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('')
+          } catch (e) {
+            console.error(e)
+            toast.error('Failed to load branches.')
+          }
+        })
+      }
+
       registerForm.addEventListener('submit', async (e) => {
         e.preventDefault()
         const fullName = document.getElementById('reg-name').value.trim()
         const email = document.getElementById('reg-email').value.trim()
         const password = document.getElementById('reg-password').value
         const role = document.getElementById('reg-role').value
+        const organizationId = role === 'staff' ? document.getElementById('reg-org').value : null
+        const branchId = role === 'staff' ? document.getElementById('reg-branch').value : null
         const submitBtn = document.getElementById('reg-submit')
 
         if (password.length < 6) {
@@ -223,10 +296,15 @@ export const auth = {
           return
         }
 
+        if (role === 'staff' && (!organizationId || !branchId)) {
+          toast.warning('Please select both organization and branch.')
+          return
+        }
+
         this.setLoading(submitBtn, true)
 
         try {
-          await authService.signUp(email, password, fullName, role)
+          await authService.signUp(email, password, fullName, role, organizationId, branchId)
           
           // In Supabase, if email confirmation is on, they need to verify.
           // If off, they are auto-logged in. Let's handle both.

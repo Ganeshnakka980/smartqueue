@@ -1,5 +1,7 @@
-import { supabase } from './supabase'
-import { queueService } from './queue'
+import { supabase } from './supabase.js'
+import { queueService } from './queue.js'
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export const aiPredictor = {
   /**
@@ -9,7 +11,24 @@ export const aiPredictor = {
    */
   async predictWaitingTime(branchId, serviceId, priority = 'normal', tokenId = null) {
     try {
-      // 1. Get average service time from historical completed tokens (last 30 days, up to 100 records)
+      // Defensive UUID validation before querying Supabase
+      const isBranchUuid = branchId && UUID_REGEX.test(branchId)
+      const isServiceUuid = serviceId && UUID_REGEX.test(serviceId)
+
+      if (!isBranchUuid || !isServiceUuid) {
+        console.warn(`[AI PREDICTOR] Non-UUID IDs provided (branchId: "${branchId}", serviceId: "${serviceId}"). Using safe prediction fallback.`)
+        return {
+          predictedMinutes: 15,
+          factors: {
+            avgServiceTime: 15,
+            activeCounters: 1,
+            peopleAhead: 0,
+            congestionMultiplier: 1.0
+          }
+        }
+      }
+
+      // 1. Get average service time from historical completed tokens
       const avgServiceTime = await this.getHistoricalAverageServiceTime(serviceId)
 
       // 2. Get the number of active counters for this branch
@@ -17,15 +36,14 @@ export const aiPredictor = {
 
       // 3. Get the number of people ahead in the queue
       let peopleAhead = 0
-      if (tokenId) {
+      if (tokenId && UUID_REGEX.test(tokenId)) {
         const position = await queueService.getQueuePosition(tokenId)
         peopleAhead = Math.max(0, position - 1)
       } else {
         peopleAhead = await this.getHypotheticalPeopleAhead(branchId, serviceId, priority)
       }
 
-      // 4. Calculate the base waiting time
-      // Formula: (People Ahead * Avg Service Time) / Active Counters
+      // 4. Calculate base waiting time: (People Ahead * Avg Service Time) / Active Counters
       let predictedMinutes = (peopleAhead * avgServiceTime) / activeCountersCount
 
       // 5. Apply Time-of-Day Congestion Multiplier
@@ -49,13 +67,12 @@ export const aiPredictor = {
       }
     } catch (error) {
       console.error('Error in AI predictor:', error)
-      // Return a safe fallback based on a simple calculation
       return {
         predictedMinutes: 15,
         factors: {
           avgServiceTime: 15,
           activeCounters: 1,
-          peopleAhead: 1,
+          peopleAhead: 0,
           congestionMultiplier: 1.0,
         }
       }
@@ -63,134 +80,143 @@ export const aiPredictor = {
   },
 
   /**
-   * Calculate average service time (in minutes) based on the last 50 completed tokens.
-   * Falls back to the service's default avg_service_time if no history is available.
+   * Calculate average service time (in minutes) based on completed tokens.
    */
   async getHistoricalAverageServiceTime(serviceId) {
-    const { data: history, error } = await supabase
-      .from('queues')
-      .select('called_at, completed_at')
-      .eq('service_id', serviceId)
-      .eq('status', 'completed')
-      .not('called_at', 'is', null)
-      .not('completed_at', 'is', null)
-      .order('completed_at', { ascending: false })
-      .limit(50)
+    if (!serviceId || !UUID_REGEX.test(serviceId)) return 15
 
-    if (error || !history || history.length === 0) {
-      // Fallback: fetch default from service table
-      const { data: service } = await supabase
-        .from('services')
-        .select('avg_service_time')
-        .eq('id', serviceId)
-        .single()
-      
-      return service?.avg_service_time || 15
+    try {
+      const { data: history, error } = await supabase
+        .from('queues')
+        .select('called_at, completed_at')
+        .eq('service_id', serviceId)
+        .eq('status', 'completed')
+        .not('called_at', 'is', null)
+        .not('completed_at', 'is', null)
+        .order('completed_at', { ascending: false })
+        .limit(50)
+
+      if (error || !history || history.length === 0) {
+        const { data: service } = await supabase
+          .from('services')
+          .select('avg_service_time')
+          .eq('id', serviceId)
+          .maybeSingle()
+        
+        return service?.avg_service_time || 15
+      }
+
+      let totalMinutes = 0
+      history.forEach((ticket) => {
+        const durationMs = new Date(ticket.completed_at) - new Date(ticket.called_at)
+        totalMinutes += durationMs / 1000 / 60
+      })
+
+      return totalMinutes / history.length
+    } catch (e) {
+      return 15
     }
-
-    let totalMinutes = 0
-    history.forEach((ticket) => {
-      const durationMs = new Date(ticket.completed_at) - new Date(ticket.called_at)
-      totalMinutes += durationMs / 1000 / 60
-    })
-
-    return totalMinutes / history.length
   },
 
   /**
    * Count how many counters are currently 'open' at the branch.
-   * Returns at least 1 to avoid division by zero.
    */
   async getActiveCountersCount(branchId) {
-    const { data, error } = await supabase
-      .from('counters')
-      .select('id')
-      .eq('branch_id', branchId)
-      .eq('status', 'open')
+    if (!branchId || !UUID_REGEX.test(branchId)) return 1
 
-    if (error || !data || data.length === 0) {
-      return 1 // default fallback
+    try {
+      const { data, error } = await supabase
+        .from('counters')
+        .select('id')
+        .eq('branch_id', branchId)
+        .eq('status', 'open')
+
+      if (error || !data || data.length === 0) {
+        return 1
+      }
+
+      return data.length
+    } catch (e) {
+      return 1
     }
-
-    return data.length
   },
 
   /**
-   * Calculate how many people would be ahead of a new token with the given priority.
+   * Calculate how many people would be ahead of a new token.
    */
   async getHypotheticalPeopleAhead(branchId, serviceId, priority) {
-    const { data, error } = await supabase
-      .from('queues')
-      .select('priority')
-      .eq('branch_id', branchId)
-      .eq('service_id', serviceId)
-      .eq('status', 'waiting')
+    if (!branchId || !serviceId || !UUID_REGEX.test(branchId) || !UUID_REGEX.test(serviceId)) return 0
 
-    if (error || !data) return 0
+    try {
+      const { data, error } = await supabase
+        .from('queues')
+        .select('priority')
+        .eq('branch_id', branchId)
+        .eq('service_id', serviceId)
+        .eq('status', 'waiting')
 
-    const priorityWeights = {
-      emergency: 1,
-      vip: 2,
-      senior: 3,
-      normal: 4,
-    }
+      if (error || !data) return 0
 
-    const newPriorityWeight = priorityWeights[priority] || 4
-    let aheadCount = 0
-
-    data.forEach((ticket) => {
-      const ticketWeight = priorityWeights[ticket.priority] || 4
-      if (ticketWeight <= newPriorityWeight) {
-        aheadCount++
+      const priorityWeights = {
+        emergency: 1,
+        vip: 2,
+        senior: 3,
+        normal: 4,
       }
-    })
 
-    return aheadCount
+      const newPriorityWeight = priorityWeights[priority] || 4
+      let aheadCount = 0
+
+      data.forEach((ticket) => {
+        const ticketWeight = priorityWeights[ticket.priority] || 4
+        if (ticketWeight <= newPriorityWeight) {
+          aheadCount++
+        }
+      })
+
+      return aheadCount
+    } catch (e) {
+      return 0
+    }
   },
 
   /**
-   * Determine a congestion multiplier based on the hour of the day.
-   * Uses historical queue volumes to see if the current hour is historically busy.
+   * Calculate time-of-day traffic congestion multiplier.
    */
   async getHistoricalCongestionMultiplier(branchId) {
-    const currentHour = new Date().getHours()
-    
-    // Query last 100 tickets at this branch to find peak hours
-    const { data: history, error } = await supabase
-      .from('queues')
-      .select('created_at')
-      .eq('branch_id', branchId)
-      .limit(200)
+    if (!branchId || !UUID_REGEX.test(branchId)) return 1.0
 
-    if (error || !history || history.length === 0) {
-      return 1.0 // no history, no multiplier
+    try {
+      const currentHour = new Date().getHours()
+      
+      const { data, error } = await supabase
+        .from('queues')
+        .select('created_at')
+        .eq('branch_id', branchId)
+        .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+        .limit(200)
+
+      if (error || !data || data.length === 0) {
+        if (currentHour >= 11 && currentHour <= 14) return 1.3
+        if (currentHour >= 17 && currentHour <= 19) return 1.2
+        return 1.0
+      }
+
+      const hourCounts = new Array(24).fill(0)
+      data.forEach(t => {
+        const h = new Date(t.created_at).getHours()
+        hourCounts[h]++
+      })
+
+      const maxCount = Math.max(...hourCounts)
+      const currentHourCount = hourCounts[currentHour]
+
+      if (maxCount === 0) return 1.0
+      const ratio = currentHourCount / maxCount
+      return 0.8 + (ratio * 0.6)
+    } catch (e) {
+      return 1.0
     }
-
-    // Map tickets to their hour of creation
-    const hourlyCounts = Array(24).fill(0)
-    history.forEach((ticket) => {
-      const hour = new Date(ticket.created_at).getHours()
-      hourlyCounts[hour]++
-    })
-
-    // Calculate average tickets per hour (for active hours, say 8am to 6pm = 10 hours)
-    const activeHoursCount = hourlyCounts.slice(8, 18).reduce((a, b) => a + b, 0)
-    const avgTicketsPerHour = activeHoursCount / 10
-
-    if (avgTicketsPerHour === 0) return 1.0
-
-    // Compare current hour traffic to average
-    const currentHourTraffic = hourlyCounts[currentHour] || 0
-    const ratio = currentHourTraffic / avgTicketsPerHour
-
-    // Normalize ratio into a sensible multiplier (cap at 1.5x, floor at 0.8x)
-    if (ratio > 1.2) {
-      return Math.min(1.5, 1.0 + (ratio - 1.0) * 0.5) // Peak hour: up to 1.5x wait time
-    } else if (ratio < 0.8) {
-      return Math.max(0.8, 1.0 - (1.0 - ratio) * 0.3) // Light hour: down to 0.8x wait time
-    }
-
-    return 1.0
   }
 }
 

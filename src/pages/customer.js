@@ -9,6 +9,8 @@ import { skeletons } from '../components/skeletons'
 import { supabase } from '../services/supabase'
 import QRCode from 'qrcode'
 import gsap from 'gsap'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 export const customer = {
   activeSubscription: null,
@@ -487,14 +489,45 @@ export const customer = {
       }
 
       const position = await queueService.getQueuePosition(token.id)
-      const prediction = await aiPredictor.predictWaitingTime(
-        token.branch_id,
-        token.service_id,
-        token.priority,
-        token.id
-      )
-
+      const estWaitMinutes = position > 0 ? Math.max(1, (position - 1) * 10) : 0
       const isServing = token.status === 'serving'
+      const isCalled = token.status === 'called'
+      const isApproved = token.status === 'approved'
+      const isCompleted = token.status === 'completed'
+
+      let statusContentHTML = ''
+      if (isServing) {
+        statusContentHTML = `
+          <div class="flex items-center justify-center gap-2 text-emerald-500 dark:text-emerald-400 font-black text-lg">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+            Service In Progress
+          </div>
+          <div class="text-xs text-slate-600 dark:text-slate-300 mt-1.5 font-bold">Currently being served at ${token.counters?.name || 'Counter'}</div>
+        `
+      } else if (isCalled) {
+        statusContentHTML = `
+          <div class="text-success font-black text-lg animate-bounce">Your Turn!</div>
+          <div class="text-sm text-slate-700 dark:text-slate-300 mt-1 font-bold">Please proceed to ${token.counters?.name || 'Counter'} immediately</div>
+        `
+      } else if (isApproved) {
+        statusContentHTML = `
+          <div class="text-blue-500 dark:text-blue-400 font-extrabold text-lg">Ticket Approved</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold">Your ticket is confirmed by staff. Please remain near the waiting area.</div>
+        `
+      } else if (isCompleted) {
+        statusContentHTML = `
+          <div class="text-success font-black text-lg">Service Completed</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold">Thank you for visiting!</div>
+        `
+      } else {
+        statusContentHTML = `
+          <div class="text-slate-400 text-xs font-bold uppercase tracking-wider">Queue Position</div>
+          <div class="text-4xl font-black text-slate-950 dark:text-white my-1" id="live-position-val">#${position}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400">people ahead: <span id="live-ahead-val" class="font-bold text-slate-700 dark:text-slate-200">${Math.max(0, position - 1)}</span></div>
+        `
+      }
+
+      let waitTimeDisplay = isServing ? 'In Progress' : (isCompleted ? 'Done' : (isCalled ? '0 mins' : `~${estWaitMinutes} mins`))
       
       return `
         <div class="max-w-2xl mx-auto">
@@ -530,21 +563,13 @@ export const customer = {
 
               <!-- Status Message -->
               <div id="live-status-container" class="p-6 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/30 dark:border-slate-800/30 max-w-sm mx-auto mb-6">
-                ${isServing ? `
-                  <div class="text-success font-black text-lg animate-bounce">Your Turn!</div>
-                  <div class="text-sm text-slate-700 dark:text-slate-300 mt-1 font-bold">Please proceed to ${token.counters?.name || 'Counter'}</div>
-                ` : `
-                  <div class="text-slate-400 text-xs font-bold uppercase tracking-wider">Queue Position</div>
-                  <div class="text-4xl font-black text-slate-950 dark:text-white my-1" id="live-position-val">#${position}</div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400">people ahead: <span id="live-ahead-val" class="font-bold text-slate-700 dark:text-slate-200">${position - 1}</span></div>
-                `}
+                ${statusContentHTML}
               </div>
 
-              <!-- AI Wait Predictor -->
               <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-8 border-t border-b border-slate-200/30 dark:border-slate-800/30 py-4">
                 <div>
                   <span class="text-[10px] text-slate-400 font-bold uppercase block">Est. Waiting Time</span>
-                  <span class="text-xl font-black text-slate-800 dark:text-white" id="live-wait-val">${isServing ? '0' : `~${prediction.predictedMinutes}`} mins</span>
+                  <span class="text-xl font-black text-slate-800 dark:text-white" id="live-wait-val">${waitTimeDisplay}</span>
                 </div>
                 <div>
                   <span class="text-[10px] text-slate-400 font-bold uppercase block">Priority Level</span>
@@ -760,14 +785,22 @@ export const customer = {
    * Helper to calculate distance in km between two lat/lng coordinates (Haversine formula)
    */
   calculateDistance(lat1, lon1, lat2, lon2) {
-    if (!lat1 || !lon1 || !lat2 || !lon2) return null
+    const p1 = parseFloat(lat1)
+    const p2 = parseFloat(lon1)
+    const q1 = parseFloat(lat2)
+    const q2 = parseFloat(lon2)
+
+    if (isNaN(p1) || isNaN(p2) || isNaN(q1) || isNaN(q2)) return null
+    if (p1 < -90 || p1 > 90 || p2 < -180 || p2 > 180) return null
+    if (q1 < -90 || q1 > 90 || q2 < -180 || q2 > 180) return null
+
     const R = 6371 // radius of earth in km
-    const dLat = (lat2 - lat1) * Math.PI / 180
-    const dLon = (lon2 - lon1) * Math.PI / 180
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+    const dLat = (q1 - p1) * Math.PI / 180
+    const dLon = (q2 - p2) * Math.PI / 180
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(p1 * Math.PI / 180) * Math.cos(q1 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
     return R * c
   },
 
@@ -939,7 +972,8 @@ export const customer = {
     this.wizard.watchId = navigator.geolocation.watchPosition(
       (pos) => {
         this.wizard.userLocation = [pos.coords.latitude, pos.coords.longitude]
-        console.log("GPS Location Updated:", this.wizard.userLocation)
+        this.wizard.isGeolocated = true
+        console.log(`[LOCATION] User coordinates: ${pos.coords.latitude}, ${pos.coords.longitude}`)
         
         // Update user marker position on Leaflet Map
         if (this.wizard.map && this.wizard.userMarker) {
@@ -950,10 +984,12 @@ export const customer = {
         this.filterAndRenderBranches()
       },
       (err) => {
-        console.warn("Real-time GPS coordinates not available or permission denied:", err)
-        // Fallback to NYC center if not already geolocated
+        console.warn("[LOCATION] GPS coordinates not available or permission denied:", err)
+        this.wizard.isGeolocated = false
+        // Fallback to Mumbai center if not already geolocated
         if (!this.wizard.userLocation) {
-          this.wizard.userLocation = [40.7128, -74.0060]
+          this.wizard.userLocation = [19.0760, 72.8777]
+          console.log(`[LOCATION] Fallback default coordinates: ${this.wizard.userLocation[0]}, ${this.wizard.userLocation[1]}`)
           this.filterAndRenderBranches()
         }
       },
@@ -966,14 +1002,10 @@ export const customer = {
     // Setup Supabase Real-Time Branch Stats Channel Subscription
     this.setupRealtimeBranchStats()
 
-    // Bind popup selection click event delegator on map container
+    // Bind popup selection click event delegator on map container (safely without cloning DOM)
     const mapDiv = document.getElementById('leaflet-map')
-    if (mapDiv) {
-      // Clear previous click listener if any
-      const newMapDiv = mapDiv.cloneNode(true)
-      mapDiv.parentNode.replaceChild(newMapDiv, mapDiv)
-      
-      newMapDiv.addEventListener('click', (e) => {
+    if (mapDiv && !mapDiv._hasPopupClickListener) {
+      mapDiv.addEventListener('click', (e) => {
         const selectBtn = e.target.closest('.btn-select-branch-map')
         if (selectBtn) {
           const id = selectBtn.getAttribute('data-id')
@@ -981,6 +1013,7 @@ export const customer = {
           this.selectBranch(id, name)
         }
       })
+      mapDiv._hasPopupClickListener = true
     }
 
     // Bind back button
@@ -1024,47 +1057,50 @@ export const customer = {
   },
 
   /**
-   * Load Leaflet Library & Tiles
+   * Load Leaflet Library & OpenStreetMap Tiles
    */
   async renderLeafletMapLayout() {
-    // 1. Load Leaflet CSS and JS if not already loaded
-    if (!document.getElementById('leaflet-css-link')) {
-      const link = document.createElement('link')
-      link.id = 'leaflet-css-link'
-      link.rel = 'stylesheet'
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-      document.head.appendChild(link)
-    }
+    const mapDiv = document.getElementById('leaflet-map')
+    if (!mapDiv) return
 
-    if (!window.L) {
-      await new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-        script.onload = resolve
-        script.onerror = reject
-        document.body.appendChild(script)
-      })
-    }
-
-    // 2. Clear old map instance
+    // 1. Clear old map instance safely
     if (this.wizard.map) {
-      this.wizard.map.remove()
+      try {
+        this.wizard.map.remove()
+      } catch (err) {
+        console.warn('Error removing map instance:', err)
+      }
       this.wizard.map = null
     }
 
-    // 3. Initialize map centered on user or NYC Center
-    const center = this.wizard.userLocation || [40.7128, -74.0060]
+    // 2. Initialize map centered on user or Mumbai Center
+    const center = this.wizard.userLocation || [19.0760, 72.8777]
     const map = L.map('leaflet-map', {
-      zoomControl: true
-    }).setView(center, 13)
+      zoomControl: true,
+      fadeAnimation: true,
+      zoomAnimation: true
+    }).setView(center, 12)
     this.wizard.map = map
 
-    // 4. Load Premium Dark Matter Tile Layer (Free, no API key required)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 20
+    // 3. Load standard OpenStreetMap Tile Layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+      crossOrigin: true
     }).addTo(map)
+
+    // 4. Force map container layout recalculation after container becomes visible
+    map.invalidateSize()
+    setTimeout(() => {
+      if (this.wizard.map) {
+        this.wizard.map.invalidateSize()
+      }
+    }, 200)
+    setTimeout(() => {
+      if (this.wizard.map) {
+        this.wizard.map.invalidateSize()
+      }
+    }, 500)
 
     // 5. Draw User Blue pulsing dot
     if (this.wizard.userLocation) {
@@ -1090,18 +1126,32 @@ export const customer = {
     const listCol = document.getElementById('branch-list-column')
     if (!listCol || !this.wizard.map) return
 
+    console.log('--------------------------------------------------')
+    console.log('🔍 [DEBUG FLOW START: DISCOVERY & FILTERING]')
+    console.log(`[LOCATION] User coordinates: ${this.wizard.userLocation ? `${this.wizard.userLocation[0]}, ${this.wizard.userLocation[1]}` : 'N/A'}`)
+
     // Clear old Leaflet markers
     if (this.wizard.markers && this.wizard.markers.length > 0) {
       this.wizard.markers.forEach(m => m.remove())
     }
     this.wizard.markers = []
 
+    const rawBranches = this.wizard.branches || []
+    console.log(`[SUPABASE BRANCH QUERY] Branches in wizard state: ${rawBranches.length}`)
+
     // 1. Calculate distances & stats
-    let branches = this.wizard.branches.map(b => {
-      const distance = this.wizard.userLocation
-        ? this.calculateDistance(this.wizard.userLocation[0], this.wizard.userLocation[1], parseFloat(b.latitude), parseFloat(b.longitude))
+    let branches = rawBranches.map(b => {
+      const lat = parseFloat(b.latitude)
+      const lng = parseFloat(b.longitude)
+      const hasValidCoords = !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180
+
+      const distance = (this.wizard.userLocation && hasValidCoords)
+        ? this.calculateDistance(this.wizard.userLocation[0], this.wizard.userLocation[1], lat, lng)
         : null
-      
+
+      console.log(`[BRANCH DATA] ID: ${b.id} | Name: "${b.name}" | Lat: ${lat} | Lng: ${lng} | Addr: "${b.address}"`)
+      console.log(`[DISTANCE] Branch: "${b.name}" | Distance: ${distance !== null ? distance.toFixed(2) + ' km' : 'N/A'}`)
+
       let waitTime = 10
       let queueLen = 2
       if (b.id) {
@@ -1112,6 +1162,9 @@ export const customer = {
 
       return {
         ...b,
+        latitude: lat,
+        longitude: lng,
+        hasValidCoords,
         distance,
         waitTime,
         queueLen
@@ -1120,8 +1173,14 @@ export const customer = {
 
     // Sort by distance if GPS location exists
     if (this.wizard.userLocation) {
-      branches.sort((a, b) => a.distance - b.distance)
+      branches.sort((a, b) => {
+        if (a.distance === null) return 1
+        if (b.distance === null) return -1
+        return a.distance - b.distance
+      })
     }
+
+    console.log(`[ACTIVE FILTERS] SearchQuery: "${this.wizard.searchQuery}" | ActiveFilter: "${this.wizard.activeFilter}"`)
 
     // 2. Filter query search (matches name, category, or city/area in address)
     if (this.wizard.searchQuery) {
@@ -1136,6 +1195,7 @@ export const customer = {
     // 3. Tab Filters (within 1km, 5km, open now, wait time, favorites)
     const favorites = JSON.parse(localStorage.getItem('favorite_branches') || '[]')
     
+    // NOTE: 'all' filter shows ALL branches (sorted by distance) without restricting max distance!
     if (this.wizard.activeFilter === '1km') {
       branches = branches.filter(b => b.distance !== null && b.distance <= 1)
     } else if (this.wizard.activeFilter === '5km') {
@@ -1148,6 +1208,8 @@ export const customer = {
       branches = branches.filter(b => favorites.includes(b.id))
     }
 
+    console.log(`[FINAL FILTERED BRANCHES] Count: ${branches.length}`)
+
     // 4. Render Lists UI
     if (branches.length === 0) {
       listCol.innerHTML = `
@@ -1155,6 +1217,8 @@ export const customer = {
           <p class="text-sm text-slate-500">No nearby branches match the criteria.</p>
         </div>
       `
+      console.log(`[LEAFLET MARKERS CREATED] Count: 0`)
+      console.log('🎯 [DEBUG FLOW END]')
       return
     }
 
@@ -1210,10 +1274,10 @@ export const customer = {
     }).join('')
 
     // 5. Render Leaflet Markers with Emojis
+    const markerBoundsPoints = []
+
     branches.forEach(b => {
-      if (!b.latitude || !b.longitude) return
-      const lat = parseFloat(b.latitude)
-      const lng = parseFloat(b.longitude)
+      if (!b.hasValidCoords) return
       const isOpen = this.isBranchOpen(b)
       const emoji = this.getCategoryEmoji(b.category_id)
       const pinColor = isOpen ? '#10B981' : '#EF4444'
@@ -1225,7 +1289,7 @@ export const customer = {
         iconAnchor: [16, 32]
       })
 
-      const marker = L.marker([lat, lng], { icon: customIcon }).addTo(this.wizard.map)
+      const marker = L.marker([b.latitude, b.longitude], { icon: customIcon }).addTo(this.wizard.map)
 
       // Leaflet Popup Content
       const detailsPopupContent = `
@@ -1244,13 +1308,7 @@ export const customer = {
           </button>
         </div>
       `
-
       marker.bindPopup(detailsPopupContent)
-
-      marker.on('click', () => {
-        this.highlightBranchCard(b.id)
-      })
-
       this.wizard.markers.push(marker)
     })
 
@@ -1488,7 +1546,8 @@ export const customer = {
             this.wizard.branchId,
             this.wizard.serviceId,
             router.currentUser.id,
-            this.wizard.priority
+            this.wizard.priority,
+            this.wizard.organizationId
           )
           toast.success('Joined queue successfully!')
           router.navigate('/customer/live-tracking', { id: queueRecord.id })
@@ -1518,19 +1577,10 @@ export const customer = {
     
     if (!this.wizard.branchId || !this.wizard.serviceId) return
 
-    try {
-      const prediction = await aiPredictor.predictWaitingTime(
-        this.wizard.branchId,
-        this.wizard.serviceId,
-        this.wizard.priority
-      )
-      
-      if (valueEl && detailsEl) {
-        valueEl.textContent = `~${prediction.predictedMinutes} mins`
-        detailsEl.textContent = `Based on ${prediction.factors.activeCounters} active counter(s), ${prediction.factors.peopleAhead} person(s) ahead, and a ${Math.round(prediction.factors.congestionMultiplier * 100)}% traffic load.`
-      }
-    } catch (e) {
-      console.error(e)
+    const estMins = 15
+    if (valueEl && detailsEl) {
+      valueEl.textContent = `~${estMins} mins`
+      detailsEl.textContent = `Standard estimated service duration per visitor.`
     }
   },
   initLiveTracking(tokenId) {
@@ -1586,8 +1636,9 @@ export const customer = {
           filter: `id=eq.${tokenId}`,
         },
         async (payload) => {
-          console.log('Token updated in real-time:', payload.new)
+          console.log('[CUSTOMER REALTIME] Received queue update:', payload.new)
           const updatedToken = payload.new
+          console.log('[CUSTOMER] Current status:', updatedToken.status)
           
           // Play a gentle notification sound when status changes
           try {
@@ -1596,52 +1647,73 @@ export const customer = {
             const gain = context.createGain()
             osc.connect(gain)
             gain.connect(context.destination)
-            osc.frequency.value = updatedToken.status === 'serving' ? 523.25 : 440 // C5 for serving, A4 for others
+            osc.frequency.value = updatedToken.status === 'serving' ? 523.25 : 440
             gain.gain.setValueAtTime(0.1, context.currentTime)
             osc.start()
             osc.stop(context.currentTime + 0.3)
-          } catch (e) {
-            // Audio context blocked by browser autoplay rules
-          }
+          } catch (e) {}
 
           if (updatedToken.status === 'serving') {
-            // Fetch counter name
-            const { data: counter } = await supabase
-              .from('counters')
-              .select('name')
-              .eq('id', updatedToken.counter_id)
-              .single()
-
-            toast.success(`Your turn! Please go to ${counter?.name || 'the counter'}`)
-            
-            // Animate card transition to serving
-            const statusContainer = document.getElementById('live-status-container')
-            const pulseContainer = document.getElementById('serving-pulse-container')
-            
-            if (statusContainer) {
-              statusContainer.innerHTML = `
-                <div class="text-success font-black text-lg animate-bounce">Your Turn!</div>
-                <div class="text-sm text-slate-700 dark:text-slate-300 mt-1 font-bold">Please proceed to ${counter?.name || 'Counter'}</div>
-              `
-              gsap.from(statusContainer, { scale: 0.9, duration: 0.3, ease: 'back.out(1.5)' })
-            }
-
-            if (pulseContainer) {
-              pulseContainer.style.opacity = '1'
-            }
-
-            const waitVal = document.getElementById('live-wait-val')
-            if (waitVal) waitVal.textContent = '0 mins'
-          } else if (['completed', 'skipped', 'cancelled'].includes(updatedToken.status)) {
-            toast.info(`Token status updated to: ${updatedToken.status}`)
-            router.navigate('/customer/dashboard')
+            console.log('[CUSTOMER] Rendering Service In Progress state')
+            toast.success('🔔 YOUR TURN! Service in progress at counter.')
+            await this.updateCustomerStatusUI(updatedToken)
+          } else if (['cancelled', 'skipped'].includes(updatedToken.status)) {
+            toast.error(`Your queue token was ${updatedToken.status}.`)
+            setTimeout(() => {
+              router.navigate('/customer/dashboard')
+            }, 2000)
+          } else if (updatedToken.status === 'completed') {
+            toast.success('✅ Service Completed! Thank you.')
+            await this.updateCustomerStatusUI(updatedToken)
+            setTimeout(() => {
+              this.openFeedbackDialog(updatedToken.id, updatedToken.token_number)
+            }, 1000)
           } else {
-            // Update queue position and waiting time
             this.updateLiveTrackingDetails(tokenId)
           }
         }
       )
       .subscribe()
+  },
+
+  async updateCustomerStatusUI(token) {
+    const statusContainer = document.getElementById('live-status-container')
+    const pulseContainer = document.getElementById('serving-pulse-container')
+    const waitVal = document.getElementById('live-wait-val')
+
+    if (!statusContainer) return
+
+    let counterName = 'Counter'
+    if (token.counter_id) {
+      const { data: counter } = await supabase.from('counters').select('name').eq('id', token.counter_id).maybeSingle()
+      if (counter) counterName = counter.name
+    }
+
+    if (token.status === 'serving') {
+      console.log('[CUSTOMER] Rendering Service In Progress state')
+      statusContainer.innerHTML = `
+        <div class="flex items-center justify-center gap-2 text-emerald-500 dark:text-emerald-400 font-black text-lg">
+          <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+          Your Turn / Service In Progress
+        </div>
+        <div class="text-xs text-slate-600 dark:text-slate-300 mt-1.5 font-bold">Please proceed to ${counterName}</div>
+      `
+      if (pulseContainer) pulseContainer.style.opacity = '1'
+      if (waitVal) waitVal.textContent = 'In Progress'
+    } else if (token.status === 'completed') {
+      statusContainer.innerHTML = `
+        <div class="text-success font-black text-lg">Service Completed</div>
+        <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold">Thank you for visiting! Please rate your experience.</div>
+      `
+      if (pulseContainer) pulseContainer.style.opacity = '0'
+      if (waitVal) waitVal.textContent = 'Done'
+    } else if (token.status === 'cancelled' || token.status === 'skipped') {
+      statusContainer.innerHTML = `
+        <div class="text-danger font-black text-lg">Queue Session Ended</div>
+        <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold">Your ticket was ${token.status}.</div>
+      `
+      if (pulseContainer) pulseContainer.style.opacity = '0'
+    }
   },
 
   /**
@@ -1650,23 +1722,14 @@ export const customer = {
   async updateLiveTrackingDetails(tokenId) {
     try {
       const position = await queueService.getQueuePosition(tokenId)
-      const token = await queueService.getActiveToken(router.currentUser.id)
-      if (!token) return
-
-      const prediction = await aiPredictor.predictWaitingTime(
-        token.branch_id,
-        token.service_id,
-        token.priority,
-        token.id
-      )
 
       const posVal = document.getElementById('live-position-val')
       const aheadVal = document.getElementById('live-ahead-val')
       const waitVal = document.getElementById('live-wait-val')
 
       if (posVal) posVal.textContent = `#${position}`
-      if (aheadVal) aheadVal.textContent = position - 1
-      if (waitVal) waitVal.textContent = `~${prediction.predictedMinutes} mins`
+      if (aheadVal) aheadVal.textContent = Math.max(0, position - 1)
+      if (waitVal) waitVal.textContent = `~${Math.max(1, (position - 1) * 10)} mins`
     } catch (e) {
       console.error(e)
     }

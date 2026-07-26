@@ -5,7 +5,7 @@ export const authService = {
    * Register a new user with email, password, full name, and role.
    * The role defaults to 'customer' if not specified.
    */
-  async signUp(email, password, fullName, role = 'customer') {
+  async signUp(email, password, fullName, role = 'customer', organizationId = null, branchId = null) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -13,6 +13,8 @@ export const authService = {
         data: {
           full_name: fullName,
           role: role,
+          organization_id: organizationId,
+          branch_id: branchId,
         },
       },
     })

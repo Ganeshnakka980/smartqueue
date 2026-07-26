@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { supabase } from './supabase.js'
 
 // ==========================================================
 // MOCK DATA FALLBACKS (If database is not migrated yet)
@@ -21,124 +21,227 @@ export const MOCK_CATEGORIES = [
 
 export const MOCK_BRANCHES = [
   // Healthcare (10 branches)
-  { id: 'h1111111-1111-1111-1111-111111111111', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'City General Hospital', address: '415 1st Ave, New York, NY 10010', latitude: 40.7384, longitude: -73.9785, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+1 212-555-0101', status: 'active' },
-  { id: 'h2222222-2222-2222-2222-222222222222', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Apollo Health Center', address: '125 W 72nd St, New York, NY 10023', latitude: 40.7785, longitude: -73.9812, opening_time: '08:00:00', closing_time: '20:00:00', contact_number: '+1 212-555-0102', status: 'active' },
-  { id: 'h3333333-3333-3333-3333-333333333333', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Medicare Clinic', address: '542 E 12th St, New York, NY 10009', latitude: 40.7291, longitude: -73.9818, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+1 212-555-0103', status: 'active' },
-  { id: 'h4444444-4444-4444-4444-444444444444', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Sunrise Hospital', address: '1000 10th Ave, New York, NY 10019', latitude: 40.7698, longitude: -73.9892, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+1 212-555-0104', status: 'active' },
-  { id: 'h5555555-5555-5555-5555-555555555555', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Hope Medical Center', address: '225 E 64th St, New York, NY 10021', latitude: 40.7635, longitude: -73.9632, opening_time: '08:00:00', closing_time: '17:00:00', contact_number: '+1 212-555-0105', status: 'active' },
-  { id: 'h6666666-6666-6666-6666-666666666666', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Bellevue Hospital Center', address: '462 1st Ave, New York, NY 10016', latitude: 40.7390, longitude: -73.9760, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+1 212-555-0106', status: 'active' },
-  { id: 'h7777777-7777-7777-7777-777777777777', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Mount Sinai Hospital', address: '1468 Madison Ave, New York, NY 10029', latitude: 40.7899, longitude: -73.9525, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+1 212-555-0107', status: 'active' },
-  { id: 'h8888888-8888-8888-8888-888888888888', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'NewYork-Presbyterian Hospital', address: '525 E 68th St, New York, NY 10065', latitude: 40.7644, longitude: -73.9542, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+1 212-555-0108', status: 'active' },
-  { id: 'h9999999-9999-9999-9999-999999999999', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Lenox Hill Hospital', address: '100 E 77th St, New York, NY 10075', latitude: 40.7735, longitude: -73.9599, opening_time: '07:30:00', closing_time: '21:00:00', contact_number: '+1 212-555-0109', status: 'active' },
-  { id: 'haaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'NYU Langone Health', address: '550 1st Ave, New York, NY 10016', latitude: 40.7425, longitude: -73.9740, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+1 212-555-0110', status: 'active' },
+  { id: '11111111-1111-1111-1111-111111111111', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Kokilaben Dhirubhai Ambani Hospital', address: 'Rao Saheb, Achutrao Patwardhan Marg, Four Bungalows, Andheri West, Mumbai, 400053', latitude: 19.1312, longitude: 72.8252, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 4269 6969', status: 'active' },
+  { id: '12222222-2222-2222-2222-222222222222', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Lilavati Hospital & Research Centre', address: 'A-791, Bandra Reclamation Rd, KC Marg, Bandra West, Mumbai, 400050', latitude: 19.0514, longitude: 72.8285, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 2675 1000', status: 'active' },
+  { id: '13333333-3333-3333-3333-333333333333', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Nanavati Max Super Speciality Hospital', address: 'Swami Vivekananda Rd, LIC Colony, Suresh Colony, Vile Parle West, Mumbai, 400056', latitude: 19.0963, longitude: 72.8378, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 2626 7500', status: 'active' },
+  { id: '14444444-4444-4444-4444-444444444444', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Hinduja Hospital', address: 'Veer Savarkar Marg, Mahim West, Mahim, Mumbai, 400016', latitude: 19.0328, longitude: 72.8375, opening_time: '08:00:00', closing_time: '20:00:00', contact_number: '+91 22 2445 1771', status: 'active' },
+  { id: '15555555-5555-5555-5555-555555555555', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Tata Memorial Hospital', address: 'Dr. E, Dr Ernest Borges Rd, Parel, Mumbai, 400012', latitude: 19.0049, longitude: 72.8427, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+91 22 2417 7000', status: 'active' },
+  { id: '16666666-6666-6666-6666-666666666666', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'SevenHills Hospital', address: 'Marol Maroshi Rd, Shivaji Nagar, Andheri East, Mumbai, 400059', latitude: 19.1215, longitude: 72.8790, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 6767 6767', status: 'active' },
+  { id: '17777777-7777-7777-7777-177777777777', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Fortis Hospital Mulund', address: 'Mulund Goregaon Link Rd, Industrial Area, Bhandup West, Mumbai, 400078', latitude: 19.1672, longitude: 72.9553, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 4365 4365', status: 'active' },
+  { id: '18888888-8888-8888-8888-188888888888', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Jaslok Hospital', address: '15, Dr Deshmukh Marg, Pedder Rd, Cumballa Hill, Mumbai, 400026', latitude: 18.9723, longitude: 72.8095, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 6657 3333', status: 'active' },
+  { id: '19999999-9999-9999-9999-199999999999', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Breach Candy Hospital', address: '60 A, Bhulabhai Desai Marg, Breach Candy, Cumballa Hill, Mumbai, 400026', latitude: 18.9739, longitude: 72.8048, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 2366 7788', status: 'active' },
+  { id: '1aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', name: 'Reliance Foundation Hospital', address: 'Raja Rammohan Roy Rd, Prarthana Samaj, Girgaon, Mumbai, 400004', latitude: 18.9592, longitude: 72.8202, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 3547 5757', status: 'active' },
 
   // Banking (8 branches)
-  { id: 'b1111111-1111-1111-1111-111111111111', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'SBI Main Branch', address: '11 Wall St, New York, NY 10005', latitude: 40.7069, longitude: -74.0112, opening_time: '09:30:00', closing_time: '16:00:00', contact_number: '+1 212-555-0201', status: 'active' },
-  { id: 'b2222222-2222-2222-2222-222222222222', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'HDFC Downtown Branch', address: '420 Lexington Ave, New York, NY 10170', latitude: 40.7518, longitude: -73.9754, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+1 212-555-0202', status: 'active' },
-  { id: 'b3333333-3333-3333-3333-333333333333', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'ICICI Central Branch', address: '350 5th Ave, New York, NY 10118', latitude: 40.7484, longitude: -73.9857, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+1 212-555-0203', status: 'active' },
-  { id: 'b4444444-4444-4444-4444-444444444444', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'Axis Bank City Branch', address: '1568 Broadway, New York, NY 10036', latitude: 40.7590, longitude: -73.9844, opening_time: '09:00:00', closing_time: '16:30:00', contact_number: '+1 212-555-0204', status: 'active' },
-  { id: 'b5555555-5555-5555-5555-555555555555', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'Chase Bank Wall St', address: '26 Wall St, New York, NY 10005', latitude: 40.7073, longitude: -74.0105, opening_time: '08:30:00', closing_time: '17:00:00', contact_number: '+1 212-555-0205', status: 'active' },
-  { id: 'b6666666-6666-6666-6666-666666666666', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'Bank of America Times Square', address: '1133 Avenue of the Americas, NY 10036', latitude: 40.7565, longitude: -73.9829, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+1 212-555-0206', status: 'active' },
-  { id: 'b7777777-7777-7777-7777-777777777777', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'Citibank Union Square', address: '14 Union Square S, New York, NY 10003', latitude: 40.7342, longitude: -73.9902, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+1 212-555-0207', status: 'active' },
-  { id: 'b8888888-8888-8888-8888-888888888888', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'Wells Fargo Grand Central', address: '60 E 42nd St, New York, NY 10165', latitude: 40.7523, longitude: -73.9782, opening_time: '08:30:00', closing_time: '17:00:00', contact_number: '+1 212-555-0208', status: 'active' },
+  { id: 'b1111111-1111-1111-1111-111111111111', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'SBI Bandra Branch', address: 'Turner Road, Near Bandra Station, Bandra West, Mumbai, 400050', latitude: 19.0585, longitude: 72.8302, opening_time: '10:00:00', closing_time: '16:00:00', contact_number: '+91 22 2640 1234', status: 'active' },
+  { id: 'b2222222-2222-2222-2222-222222222222', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'HDFC Bank Andheri Branch', address: 'SV Road, Opposite Andheri Station, Andheri West, Mumbai, 400058', latitude: 19.1158, longitude: 72.8402, opening_time: '09:30:00', closing_time: '16:30:00', contact_number: '+91 22 6160 6161', status: 'active' },
+  { id: 'b3333333-3333-3333-3333-333333333333', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'ICICI Bank CST Branch', address: 'Dr. D.N. Road, Near CST Station, Fort, Mumbai, 400001', latitude: 18.9412, longitude: 72.8345, opening_time: '09:30:00', closing_time: '16:00:00', contact_number: '+91 22 4000 1200', status: 'active' },
+  { id: 'b4444444-4444-4444-4444-444444444444', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'Axis Bank Powai Branch', address: 'Central Avenue, Hiranandani Gardens, Powai, Mumbai, 400076', latitude: 19.1165, longitude: 72.9080, opening_time: '09:30:00', closing_time: '16:00:00', contact_number: '+91 22 6600 8800', status: 'active' },
+  { id: 'b5555555-5555-5555-5555-555555555555', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'Bank of Baroda Dadar Branch', address: 'NC Kelkar Road, Plaza Cinema Junction, Dadar West, Mumbai, 400028', latitude: 19.0182, longitude: 72.8465, opening_time: '10:00:00', closing_time: '16:00:00', contact_number: '+91 22 2422 3344', status: 'active' },
+  { id: 'b6666666-6666-6666-6666-666666666666', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'Kotak Mahindra Bank Juhu Branch', address: 'Juhu Tara Road, Near Juhu Beach, Juhu, Mumbai, 400049', latitude: 19.1030, longitude: 72.8262, opening_time: '09:30:00', closing_time: '16:30:00', contact_number: '+91 22 6605 5500', status: 'active' },
+  { id: 'b7777777-7777-7777-7777-777777777777', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'SBI Colaba Branch', address: 'Colaba Causeway, Near Regal Cinema, Colaba, Mumbai, 400001', latitude: 18.9150, longitude: 72.8270, opening_time: '10:00:00', closing_time: '16:00:00', contact_number: '+91 22 2282 1201', status: 'active' },
+  { id: 'b8888888-8888-8888-8888-888888888888', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2', name: 'HDFC Bank Worli Branch', address: 'Dr. Annie Besant Road, Worli, Mumbai, 400018', latitude: 19.0020, longitude: 72.8180, opening_time: '09:30:00', closing_time: '16:30:00', contact_number: '+91 22 6652 1000', status: 'active' },
 
   // Government Services (6 branches)
-  { id: 'g1111111-1111-1111-1111-111111111111', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Passport Office', address: '376 Hudson St, New York, NY 10014', latitude: 40.7289, longitude: -74.0069, opening_time: '08:00:00', closing_time: '15:30:00', contact_number: '+1 212-555-0301', status: 'active' },
-  { id: 'g2222222-2222-2222-2222-222222222222', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'RTO Office', address: '145 Hester St, New York, NY 10002', latitude: 40.7171, longitude: -73.9959, opening_time: '08:30:00', closing_time: '16:00:00', contact_number: '+1 212-555-0302', status: 'active' },
-  { id: 'g3333333-3333-3333-3333-333333333333', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Aadhaar Center', address: '109 W 125th St, New York, NY 10027', latitude: 40.8089, longitude: -73.9482, opening_time: '09:00:00', closing_time: '17:30:00', contact_number: '+1 212-555-0303', status: 'active' },
-  { id: 'g4444444-4444-4444-4444-444444444444', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Municipal Service Center', address: '1 Centre St, New York, NY 10007', latitude: 40.7126, longitude: -74.0031, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+1 212-555-0304', status: 'active' },
-  { id: 'g5555555-5555-5555-5555-555555555555', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Social Security Administration', address: '123 William St, New York, NY 10038', latitude: 40.7090, longitude: -74.0070, opening_time: '09:00:00', closing_time: '16:00:00', contact_number: '+1 212-555-0305', status: 'active' },
-  { id: 'g6666666-6666-6666-6666-666666666666', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'DMV Express Manhattan', address: '145 W 30th St, New York, NY 10001', latitude: 40.7483, longitude: -73.9908, opening_time: '08:00:00', closing_time: '16:30:00', contact_number: '+1 212-555-0306', status: 'active' },
+  { id: '31111111-1111-1111-1111-111111111111', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Passport Seva Kendra Andheri', address: 'Raheja Point, Near Andheri Railway Station, Andheri East, Mumbai, 400069', latitude: 19.1170, longitude: 72.8680, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+91 22 2548 1000', status: 'active' },
+  { id: '32222222-2222-2222-2222-222222222222', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'RTO Andheri', address: 'D-Nagar, SV Road, Near Andheri Sports Complex, Andheri West, Mumbai, 400053', latitude: 19.1352, longitude: 72.8315, opening_time: '09:30:00', closing_time: '17:30:00', contact_number: '+91 22 2636 6982', status: 'active' },
+  { id: '33333333-3333-3333-3333-333333333333', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Wadala RTO Office', address: 'Truck Terminal Rd, Wadala East, Mumbai, 400037', latitude: 19.0225, longitude: 72.8590, opening_time: '09:30:00', closing_time: '17:30:00', contact_number: '+91 22 2403 6445', status: 'active' },
+  { id: '34444444-4444-4444-4444-344444444444', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Municipal Ward Office K-West', address: 'Paliram Road, Near Andheri Railway Station, Andheri West, Mumbai, 400058', latitude: 19.1152, longitude: 72.8425, opening_time: '09:30:00', closing_time: '18:00:00', contact_number: '+91 22 2623 9499', status: 'active' },
+  { id: '35555555-5555-5555-5555-355555555555', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Municipal Ward Office H-West', address: 'St. Martin Road, Bandra West, Mumbai, 400050', latitude: 19.0550, longitude: 72.8350, opening_time: '09:30:00', closing_time: '18:00:00', contact_number: '+91 22 2642 2311', status: 'active' },
+  { id: '36666666-6666-6666-6666-366666666666', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Mumbai GPO Fort', address: 'Opposite CST Station, Fort, Mumbai, 400001', latitude: 18.9398, longitude: 72.8365, opening_time: '09:00:00', closing_time: '19:00:00', contact_number: '+91 22 2262 0956', status: 'active' },
 
   // Education (4 branches)
-  { id: 'e1111111-1111-1111-1111-111111111111', category_id: 'c4c4c4c4-c4c4-c4c4-c4c4-c4c4c4c4c4c4', name: 'Columbia Admissions Office', address: '210 Kent Hall, New York, NY 10027', latitude: 40.8066, longitude: -73.9622, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+1 212-555-0401', status: 'active' },
-  { id: 'e2222222-2222-2222-2222-222222222222', category_id: 'c4c4c4c4-c4c4-c4c4-c4c4-c4c4c4c4c4c4', name: 'NYU Student Services Center', address: '383 Lafayette St, New York, NY 10003', latitude: 40.7295, longitude: -73.9928, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+1 212-555-0402', status: 'active' },
-  { id: 'e3333333-3333-3333-3333-333333333333', category_id: 'c4c4c4c4-c4c4-c4c4-c4c4-c4c4c4c4c4c4', name: 'Fordham Admissions Center', address: '113 W 60th St, New York, NY 10023', latitude: 40.7695, longitude: -73.9840, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+1 212-555-0403', status: 'active' },
-  { id: 'e4444444-4444-4444-4444-444444444444', category_id: 'c4c4c4c4-c4c4-c4c4-c4c4-c4c4c4c4c4c4', name: 'CUNY Welcome Center', address: '217 E 42nd St, New York, NY 10017', latitude: 40.7505, longitude: -73.9745, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+1 212-555-0404', status: 'active' },
+  { id: 'e1111111-1111-1111-1111-111111111111', category_id: 'c4c4c4c4-c4c4-c4c4-c4c4-c4c4c4c4c4c4', name: 'IIT Bombay Academic Section', address: 'IIT Bombay Campus, Powai, Mumbai, 400076', latitude: 19.1334, longitude: 72.9156, opening_time: '09:30:00', closing_time: '17:30:00', contact_number: '+91 22 2576 7011', status: 'active' },
+  { id: 'e2222222-2222-2222-2222-222222222222', category_id: 'c4c4c4c4-c4c4-c4c4-c4c4-c4c4c4c4c4c4', name: "St. Xavier's College Office", address: '5, Mahapalika Marg, Dhobi Talao, Chhatrapati Shivaji Terminus Area, Fort, Mumbai, 400001', latitude: 18.9438, longitude: 72.8322, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+91 22 2262 0661', status: 'active' },
+  { id: 'e3333333-3333-3333-3333-333333333333', category_id: 'c4c4c4c4-c4c4-c4c4-c4c4-c4c4c4c4c4c4', name: 'NMIMS Student Center', address: 'V.L. Mehta Road, JVPD Scheme, Vile Parle West, Mumbai, 400056', latitude: 19.1035, longitude: 72.8370, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+91 22 4235 5555', status: 'active' },
+  { id: 'e4444444-4444-4444-4444-444444444444', category_id: 'c4c4c4c4-c4c4-c4c4-c4c4-c4c4c4c4c4c4', name: 'Mithibai College Administration', address: 'Bhaktivedanta Swami Marg, JVPD Scheme, Vile Parle West, Mumbai, 400056', latitude: 19.1028, longitude: 72.8362, opening_time: '09:00:00', closing_time: '17:00:00', contact_number: '+91 22 4233 9000', status: 'active' },
 
   // Salons & Beauty (5 branches)
-  { id: 's1111111-1111-1111-1111-111111111111', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5', name: 'Looks Salon', address: '347 Fifth Ave, New York, NY 10016', latitude: 40.7482, longitude: -73.9842, opening_time: '10:00:00', closing_time: '20:00:00', contact_number: '+1 212-555-0501', status: 'active' },
-  { id: 's2222222-2222-2222-2222-222222222222', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5', name: 'Naturals Salon', address: '85 Mercer St, New York, NY 10012', latitude: 40.7224, longitude: -74.0002, opening_time: '10:00:00', closing_time: '20:30:00', contact_number: '+1 212-555-0502', status: 'active' },
-  { id: 's3333333-3333-3333-3333-333333333333', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5', name: 'Green Trends', address: '224 W 4th St, New York, NY 10014', latitude: 40.7341, longitude: -74.0026, opening_time: '09:30:00', closing_time: '20:00:00', contact_number: '+1 212-555-0503', status: 'active' },
-  { id: 's4444444-4444-4444-4444-444444444444', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5', name: 'Urban Beauty Studio', address: '118 E 57th St, New York, NY 10022', latitude: 40.7612, longitude: -73.9702, opening_time: '10:00:00', closing_time: '19:00:00', contact_number: '+1 212-555-0504', status: 'active' },
-  { id: 's5555555-5555-5555-5555-555555555555', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5', name: 'Drybar Flatiron', address: '22 W 21st St, New York, NY 10010', latitude: 40.7412, longitude: -73.9915, opening_time: '08:00:00', closing_time: '21:00:00', contact_number: '+1 212-555-0505', status: 'active' },
+  { id: '51111111-1111-1111-1111-111111111111', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5', name: 'BBlunt Salon Bandra West', address: 'Waterfield Road, Bandra West, Mumbai, 400050', latitude: 19.0605, longitude: 72.8258, opening_time: '10:00:00', closing_time: '21:00:00', contact_number: '+91 22 2640 0122', status: 'active' },
+  { id: '52222222-2222-2222-2222-522222222222', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5', name: 'Enrich Salon Andheri West', address: 'SV Road, Near Andheri Station, Andheri West, Mumbai, 400058', latitude: 19.1180, longitude: 72.8350, opening_time: '09:30:00', closing_time: '20:30:00', contact_number: '+91 22 2623 3333', status: 'active' },
+  { id: '53333333-3333-3333-3333-533333333333', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5', name: 'Lakme Salon Dadar West', address: 'NC Kelkar Road, Dadar West, Mumbai, 400028', latitude: 19.0195, longitude: 72.8440, opening_time: '10:00:00', closing_time: '20:00:00', contact_number: '+91 22 2430 4040', status: 'active' },
+  { id: '54444444-4444-4444-4444-544444444444', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5', name: 'Truefitt & Hill Colaba', address: 'Regal Cinema Building, Colaba, Mumbai, 400001', latitude: 18.9220, longitude: 72.8310, opening_time: '09:00:00', closing_time: '21:00:00', contact_number: '+91 22 2282 3333', status: 'active' },
+  { id: '55555555-5555-5555-5555-555555555555', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5', name: 'BBlunt Juhu', address: 'Juhu Tara Road, Near Juhu Beach, Juhu, Mumbai, 400049', latitude: 19.1012, longitude: 72.8250, opening_time: '10:00:00', closing_time: '21:00:00', contact_number: '+91 22 2611 1222', status: 'active' },
 
   // Restaurants & Food (6 branches)
-  { id: 'r1111111-1111-1111-1111-111111111111', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Pizza Hub', address: '360 W 42nd St, New York, NY 10036', latitude: 40.7578, longitude: -73.9904, opening_time: '11:00:00', closing_time: '23:00:00', contact_number: '+1 212-555-0601', status: 'active' },
-  { id: 'r2222222-2222-2222-2222-222222222222', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Spice Garden', address: '110 Lexington Ave, New York, NY 10016', latitude: 40.7419, longitude: -73.9806, opening_time: '11:30:00', closing_time: '22:30:00', contact_number: '+1 212-555-0602', status: 'active' },
-  { id: 'r3333333-3333-3333-3333-333333333333', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Food Junction', address: '143 8th Ave, New York, NY 10011', latitude: 40.7410, longitude: -74.0012, opening_time: '10:00:00', closing_time: '22:00:00', contact_number: '+1 212-555-0603', status: 'active' },
-  { id: 'r4444444-4444-4444-4444-444444444444', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Family Restaurant', address: '302 Columbus Ave, New York, NY 10023', latitude: 40.7792, longitude: -73.9781, opening_time: '08:00:00', closing_time: '22:00:00', contact_number: '+1 212-555-0604', status: 'active' },
-  { id: 'r5555555-5555-5555-5555-555555555555', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Shake Shack Madison Square', address: 'Madison Square Park, New York, NY 10010', latitude: 40.7415, longitude: -73.9880, opening_time: '11:00:00', closing_time: '22:00:00', contact_number: '+1 212-555-0605', status: 'active' },
-  { id: 'r6666666-6666-6666-6666-666666666666', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Katz\'s Delicatessen', address: '205 E Houston St, New York, NY 10002', latitude: 40.7222, longitude: -73.9875, opening_time: '08:00:00', closing_time: '23:00:00', contact_number: '+1 212-555-0606', status: 'active' },
+  { id: '61111111-1111-1111-1111-611111111111', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Cafe Mondegar Colaba', address: 'Regal Circle, Colaba Causeway, Mumbai, 400001', latitude: 18.9230, longitude: 72.8315, opening_time: '08:00:00', closing_time: '23:30:00', contact_number: '+91 22 2202 0591', status: 'active' },
+  { id: '62222222-2222-2222-2222-622222222222', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Leopold Cafe Colaba', address: 'Colaba Causeway, Near Police Station, Colaba, Mumbai, 400001', latitude: 18.9225, longitude: 72.8320, opening_time: '08:00:00', closing_time: '23:30:00', contact_number: '+91 22 2282 8185', status: 'active' },
+  { id: '63333333-3333-3333-3333-633333333333', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Britannia & Co. Restaurant', address: 'Wakefield House, 11 Sprott Rd, Ballard Estate, Fort, Mumbai, 400001', latitude: 18.9352, longitude: 72.8398, opening_time: '11:30:00', closing_time: '16:00:00', contact_number: '+91 22 2261 5264', status: 'active' },
+  { id: '64444444-4444-4444-4444-644444444444', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Bademiya Colaba', address: 'Tulloch Road, Behind Taj Mahal Palace, Colaba, Mumbai, 400001', latitude: 18.9228, longitude: 72.8328, opening_time: '17:00:00', closing_time: '23:59:59', contact_number: '+91 22 2284 2915', status: 'active' },
+  { id: '65555555-5555-5555-5555-655555555555', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Gajalee Restaurant Vile Parle', address: 'Hanuman Road, Vile Parle East, Mumbai, 400057', latitude: 19.1065, longitude: 72.8480, opening_time: '11:30:00', closing_time: '23:00:00', contact_number: '+91 22 2616 6666', status: 'active' },
+  { id: '66666666-6666-6666-6666-666666666666', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6', name: 'Mahesh Lunch Home Juhu', address: 'Juhu Tara Road, Next to JW Marriott, Juhu, Mumbai, 400049', latitude: 19.1015, longitude: 72.8285, opening_time: '11:30:00', closing_time: '23:30:00', contact_number: '+91 22 2618 3263', status: 'active' },
 
   // Retail & Stores (5 branches)
-  { id: 'rt111111-1111-1111-1111-111111111111', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7', name: 'Mega Mart Superstore', address: '400 W 37th St, New York, NY 10018', latitude: 40.7554, longitude: -73.9942, opening_time: '08:00:00', closing_time: '22:00:00', contact_number: '+1 212-555-0701', status: 'active' },
-  { id: 'rt222222-2222-2222-2222-222222222222', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7', name: 'Urban Fashion Store', address: '510 Broadway, New York, NY 10012', latitude: 40.7246, longitude: -73.9982, opening_time: '10:00:00', closing_time: '21:00:00', contact_number: '+1 212-555-0702', status: 'active' },
-  { id: 'rt333333-3333-3333-3333-333333333333', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7', name: 'Apple Store Fifth Avenue', address: '767 Fifth Ave, New York, NY 10153', latitude: 40.7638, longitude: -73.9729, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+1 212-555-0703', status: 'active' },
-  { id: 'rt444444-4444-4444-4444-444444444444', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7', name: 'Macy\'s Herald Square', address: '151 W 34th St, New York, NY 10001', latitude: 40.7508, longitude: -73.9890, opening_time: '10:00:00', closing_time: '21:30:00', contact_number: '+1 212-555-0704', status: 'active' },
-  { id: 'rt555555-5555-5555-5555-555555555555', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7', name: 'Best Buy Union Square', address: '529 5th Ave, New York, NY 10003', latitude: 40.7345, longitude: -73.9910, opening_time: '10:00:00', closing_time: '20:00:00', contact_number: '+1 212-555-0705', status: 'active' },
+  { id: '70111111-1111-1111-1111-701111111111', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7', name: 'Phoenix Marketcity Kurla', address: 'LBS Road, Kamani, Kurla West, Mumbai, 400070', latitude: 19.0880, longitude: 72.8890, opening_time: '11:00:00', closing_time: '22:00:00', contact_number: '+91 22 6180 1100', status: 'active' },
+  { id: '70222222-2222-2222-2222-702222222222', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7', name: 'High Street Phoenix', address: 'Senapati Bapat Marg, Lower Parel, Mumbai, 400013', latitude: 18.9940, longitude: 72.8260, opening_time: '11:00:00', closing_time: '22:00:00', contact_number: '+91 22 4333 9999', status: 'active' },
+  { id: '70333333-3333-3333-3333-703333333333', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7', name: 'Reliance Smart CST', address: 'Dr. D.N. Road, Near CST Station, Fort, Mumbai, 400001', latitude: 18.9405, longitude: 72.8335, opening_time: '08:00:00', closing_time: '22:00:00', contact_number: '+91 22 2261 4455', status: 'active' },
+  { id: '70444444-4444-4444-4444-704444444444', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7', name: 'Croma Andheri West', address: 'Link Road, Near Laxmi Industrial Estate, Andheri West, Mumbai, 400053', latitude: 19.1235, longitude: 72.8355, opening_time: '10:00:00', closing_time: '21:30:00', contact_number: '+91 22 6761 3000', status: 'active' },
+  { id: '70555555-5555-5555-5555-705555555555', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7', name: "Nature's Basket Bandra West", address: 'Hill Road, Near Elco Market, Bandra West, Mumbai, 400050', latitude: 19.0620, longitude: 72.8280, opening_time: '08:00:00', closing_time: '22:00:00', contact_number: '+91 22 2642 1200', status: 'active' },
 
   // Customer Support (3 branches)
-  { id: 'cs111111-1111-1111-1111-111111111111', category_id: 'c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c8c8', name: 'Telecom Care Center', address: '83 Maiden Ln, New York, NY 10038', latitude: 40.7076, longitude: -74.0076, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+1 212-555-0801', status: 'active' },
-  { id: 'cs222222-2222-2222-2222-222222222222', category_id: 'c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c8c8', name: 'Tech Support Hub', address: '530 5th Ave, New York, NY 10036', latitude: 40.7550, longitude: -73.9805, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+1 212-555-0802', status: 'active' },
-  { id: 'cs333333-3333-3333-3333-333333333333', category_id: 'c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c8c8', name: 'Verizon Experience Store', address: '125 W 34th St, New York, NY 10001', latitude: 40.7498, longitude: -73.9882, opening_time: '09:00:00', closing_time: '19:00:00', contact_number: '+1 212-555-0803', status: 'active' },
+  { id: '80111111-1111-1111-1111-801111111111', category_id: 'c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c8c8', name: 'Apple Service Center Bandra', address: 'Linking Road, Bandra West, Mumbai, 400050', latitude: 19.0590, longitude: 72.8310, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+91 22 6700 9000', status: 'active' },
+  { id: '80222222-2222-2222-2222-802222222222', category_id: 'c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c8c8', name: 'Jio Care Center Andheri East', address: 'Mathuradas Vasanji Road, Andheri East, Mumbai, 400069', latitude: 19.1145, longitude: 72.8690, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+91 1800 889 9999', status: 'active' },
+  { id: '80333333-3333-3333-3333-803333333333', category_id: 'c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c8c8', name: 'Airtel Service Hub Dadar', address: 'Gokhale Road, Dadar West, Mumbai, 400028', latitude: 19.0210, longitude: 72.8450, opening_time: '09:30:00', closing_time: '18:30:00', contact_number: '+91 98920 12345', status: 'active' },
 
   // Automotive (3 branches)
-  { id: 'a1111111-1111-1111-1111-111111111111', category_id: 'c9c9c9c9-c9c9-c9c9-c9c9-c9c9c9c9c9c9', name: 'City Auto Service', address: '515 W 57th St, New York, NY 10019', latitude: 40.7712, longitude: -73.9920, opening_time: '08:00:00', closing_time: '18:00:00', contact_number: '+1 212-555-0901', status: 'active' },
-  { id: 'a2222222-2222-2222-2222-222222222222', category_id: 'c9c9c9c9-c9c9-c9c9-c9c9-c9c9c9c9c9c9', name: 'Tesla Chelsea Service', address: '511 W 25th St, New York, NY 10001', latitude: 40.7495, longitude: -74.0042, opening_time: '08:00:00', closing_time: '17:00:00', contact_number: '+1 212-555-0902', status: 'active' },
-  { id: 'a3333333-3333-3333-3333-333333333333', category_id: 'c9c9c9c9-c9c9-c9c9-c9c9-c9c9c9c9c9c9', name: 'Toyota Manhattan Service', address: '640 W 57th St, New York, NY 10019', latitude: 40.7710, longitude: -73.9930, opening_time: '07:30:00', closing_time: '18:00:00', contact_number: '+1 212-555-0903', status: 'active' },
+  { id: 'a1111111-1111-1111-1111-111111111111', category_id: 'c9c9c9c9-c9c9-c9c9-c9c9-c9c9c9c9c9c9', name: 'Linkway Honda Service Andheri', address: 'Saki Vihar Road, Near Saki Naka, Andheri East, Mumbai, 400072', latitude: 19.1210, longitude: 72.8550, opening_time: '08:30:00', closing_time: '18:30:00', contact_number: '+91 22 6677 8899', status: 'active' },
+  { id: 'a2222222-2222-2222-2222-222222222222', category_id: 'c9c9c9c9-c9c9-c9c9-c9c9-c9c9c9c9c9c9', name: 'Tata Motors Service Worli', address: 'Senapati Bapat Marg, Worli, Mumbai, 400018', latitude: 19.0130, longitude: 72.8200, opening_time: '08:00:00', closing_time: '18:00:00', contact_number: '+91 22 6656 1234', status: 'active' },
+  { id: 'a3333333-3333-3333-3333-333333333333', category_id: 'c9c9c9c9-c9c9-c9c9-c9c9-c9c9c9c9c9c9', name: 'Maruti Suzuki Service Chembur', address: 'Sion Trombay Road, Chembur, Mumbai, 400071', latitude: 19.0610, longitude: 72.8990, opening_time: '08:00:00', closing_time: '19:00:00', contact_number: '+91 22 2520 9000', status: 'active' },
 
   // Real Estate (3 branches)
-  { id: 're111111-1111-1111-1111-111111111111', category_id: 'c10c10c1-0c10-c10c-10c1-0c10c10c10c1', name: 'Prime Realty Center', address: '450 Park Ave, New York, NY 10022', latitude: 40.7618, longitude: -73.9718, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+1 212-555-1001', status: 'active' },
-  { id: 're222222-2222-2222-2222-222222222222', category_id: 'c10c10c1-0c10-c10c-10c1-0c10c10c10c1', name: 'Compass Real Estate Chelsea', address: '90 5th Ave, New York, NY 10011', latitude: 40.7368, longitude: -73.9938, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+1 212-555-1002', status: 'active' },
-  { id: 're333333-3333-3333-3333-333333333333', category_id: 'c10c10c1-0c10-c10c-10c1-0c10c10c10c1', name: 'Douglas Elliman Flatiron', address: '936 Broadway, New York, NY 10010', latitude: 40.7401, longitude: -73.9897, opening_time: '09:00:00', closing_time: '18:05:00', contact_number: '+1 212-555-1003', status: 'active' },
+  { id: 'ae111111-1111-1111-1111-ae1111111111', category_id: 'c10c10c1-0c10-c10c-10c1-0c10c10c10c1', name: 'Lodha Group Office Kanjurmarg', address: 'LBS Road, Near Kanjurmarg Station, Kanjurmarg West, Mumbai, 400078', latitude: 19.1265, longitude: 72.9370, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+91 22 6133 5000', status: 'active' },
+  { id: 'ae222222-2222-2222-2222-ae2222222222', category_id: 'c10c10c1-0c10-c10c-10c1-0c10c10c10c1', name: 'Rustomjee Sales Center Bandra', address: 'Bandra Kurla Complex, G Block, Bandra East, Mumbai, 400051', latitude: 19.0545, longitude: 72.8325, opening_time: '09:30:00', closing_time: '18:30:00', contact_number: '+91 22 6111 6111', status: 'active' },
+  { id: 'ae333333-3333-3333-3333-ae3333333333', category_id: 'c10c10c1-0c10-c10c-10c1-0c10c10c10c1', name: 'Godrej Properties Chembur', address: 'Eastern Express Highway, Chembur East, Mumbai, 400071', latitude: 19.0580, longitude: 72.9020, opening_time: '09:00:00', closing_time: '18:00:00', contact_number: '+91 22 6147 6200', status: 'active' },
 
   // Fitness & Gym (3 branches)
-  { id: 'f1111111-1111-1111-1111-111111111111', category_id: 'c11c11c1-1c11-c11c-11c1-1c11c11c11c1', name: 'Elite Fitness Hub', address: '10 Union Sq East, New York, NY 10003', latitude: 40.7348, longitude: -73.9898, opening_time: '06:00:00', closing_time: '22:00:00', contact_number: '+1 212-555-1101', status: 'active' },
-  { id: 'f2222222-2222-2222-2222-222222222222', category_id: 'c11c11c1-1c11-c11c-11c1-1c11c11c11c1', name: 'Equinox Flatiron', address: '97 5th Ave, New York, NY 10003', latitude: 40.7375, longitude: -73.9922, opening_time: '05:30:00', closing_time: '23:00:00', contact_number: '+1 212-555-1102', status: 'active' },
-  { id: 'f3333333-3333-3333-3333-333333333333', category_id: 'c11c11c1-1c11-c11c-11c1-1c11c11c11c1', name: 'Crunch Fitness Chelsea', address: '220 W 19th St, New York, NY 10011', latitude: 40.7418, longitude: -73.9985, opening_time: '05:00:00', closing_time: '22:00:00', contact_number: '+1 212-555-1103', status: 'active' },
+  { id: 'f1111111-1111-1111-1111-111111111111', category_id: 'c11c11c1-1c11-c11c-11c1-1c11c11c11c1', name: "Gold's Gym Bandra West", address: 'Linking Road, Above KFC, Bandra West, Mumbai, 400050', latitude: 19.0615, longitude: 72.8290, opening_time: '06:00:00', closing_time: '22:00:00', contact_number: '+91 22 6699 9999', status: 'active' },
+  { id: 'f2222222-2222-2222-2222-222222222222', category_id: 'c11c11c1-1c11-c11c-11c1-1c11c11c11c1', name: 'Nitrro Wellness Breach Candy', address: 'Bhulabhai Desai Road, Breach Candy, Mumbai, 400026', latitude: 19.0745, longitude: 72.050, opening_time: '05:30:00', closing_time: '23:00:00', contact_number: '+91 22 2368 4444', status: 'active' },
+  { id: 'f3333333-3333-3333-3333-333333333333', category_id: 'c11c11c1-1c11-c11c-11c1-1c11c11c11c1', name: 'Talwalkars Gym Andheri', address: 'SV Road, Next to Railway Station, Andheri West, Mumbai, 400058', latitude: 19.1175, longitude: 72.8385, opening_time: '06:00:00', closing_time: '22:00:00', contact_number: '+91 22 2623 4455', status: 'active' },
 
   // Travel & Transport (3 branches)
-  { id: 't1111111-1111-1111-1111-111111111111', category_id: 'c12c12c1-2c12-c12c-12c1-2c12c12c12c1', name: 'Grand Central Transit Desk', address: '89 E 42nd St, New York, NY 10017', latitude: 40.7527, longitude: -73.9772, opening_time: '06:00:00', closing_time: '23:00:00', contact_number: '+1 212-555-1201', status: 'active' },
-  { id: 't2222222-2222-2222-2222-222222222222', category_id: 'c12c12c1-2c12-c12c-12c1-2c12c12c12c1', name: 'Penn Station Customer Desk', address: '351 W 31st St, New York, NY 10001', latitude: 40.7501, longitude: -73.9925, opening_time: '06:00:00', closing_time: '23:59:59', contact_number: '+1 212-555-1202', status: 'active' },
-  { id: 't3333333-3333-3333-3333-333333333333', category_id: 'c12c12c1-2c12-c12c-12c1-2c12c12c12c1', name: 'Port Authority Transit Desk', address: '625 8th Ave, New York, NY 10018', latitude: 40.7568, longitude: -73.9912, opening_time: '06:00:00', closing_time: '22:30:00', contact_number: '+1 212-555-1203', status: 'active' }
+  { id: 'd1111111-1111-1111-1111-d111111111111', category_id: 'c12c12c1-2c12-c12c-12c1-2c12c12c12c1', name: 'CSM Airport T2 Info Desk', address: 'Sahar Road, Near International Terminal, Andheri East, Mumbai, 400099', latitude: 19.0896, longitude: 72.8656, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 6685 1010', status: 'active' },
+  { id: 'd2222222-2222-2222-2222-d22222222222', category_id: 'c12c12c1-2c12-c12c-12c1-2c12c12c12c1', name: 'Bandra Terminus Enquiry', address: 'Bandra East Railway Colony, Bandra East, Mumbai, 400051', latitude: 19.0625, longitude: 72.8445, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 2644 5566', status: 'active' },
+  { id: 'd3333333-3333-3333-3333-d33333333333', category_id: 'c12c12c1-2c12-c12c-12c1-2c12c12c12c1', name: 'Mumbai Central Enquiry', address: 'Mumbai Central Railway Station, Mumbai Central, Mumbai, 400008', latitude: 18.9695, longitude: 72.8194, opening_time: '00:00:00', closing_time: '23:59:59', contact_number: '+91 22 2307 3566', status: 'active' }
 ]
 
 export const MOCK_SERVICES = {
   'Healthcare': [
-    { id: 's-h-1', name: 'Emergency Care', prefix: 'ER', avg_service_time: 12 },
-    { id: 's-h-2', name: 'Outpatient Consultation', prefix: 'OP', avg_service_time: 20 },
-    { id: 's-h-3', name: 'Laboratory & Scans', prefix: 'LB', avg_service_time: 15 }
+    { id: '10000000-0000-0000-0000-000000000001', name: 'Emergency Care', prefix: 'ER', avg_service_time: 12 },
+    { id: '10000000-0000-0000-0000-000000000002', name: 'Outpatient Consultation', prefix: 'OP', avg_service_time: 20 },
+    { id: '10000000-0000-0000-0000-000000000003', name: 'Laboratory & Scans', prefix: 'LB', avg_service_time: 15 }
   ],
   'Banking': [
-    { id: 's-b-1', name: 'Cashier & Deposits', prefix: 'CS', avg_service_time: 8 },
-    { id: 's-b-2', name: 'Loans & Accounts', prefix: 'LN', avg_service_time: 25 },
-    { id: 's-b-3', name: 'Cards & Online Banking', prefix: 'CB', avg_service_time: 10 }
+    { id: '10000000-0000-0000-0000-000000000005', name: 'Cashier & Deposits', prefix: 'CS', avg_service_time: 8 },
+    { id: '10000000-0000-0000-0000-000000000006', name: 'Loans & Accounts', prefix: 'LN', avg_service_time: 25 },
+    { id: '10000000-0000-0000-0000-000000000007', name: 'Cards & Online Banking', prefix: 'CB', avg_service_time: 10 }
   ],
   'Government Services': [
-    { id: 's-g-1', name: 'New Applications', prefix: 'NA', avg_service_time: 30 },
-    { id: 's-g-2', name: 'Document Renewal', prefix: 'RN', avg_service_time: 15 },
-    { id: 's-g-3', name: 'General Inquiries', prefix: 'GI', avg_service_time: 12 }
+    { id: '10000000-0000-0000-0000-000000000008', name: 'New Applications', prefix: 'NA', avg_service_time: 30 },
+    { id: '10000000-0000-0000-0000-000000000009', name: 'Document Renewal', prefix: 'RN', avg_service_time: 15 },
+    { id: '10000000-0000-0000-0000-000000000022', name: 'General Inquiries', prefix: 'GI', avg_service_time: 12 }
   ],
   'Salons & Beauty': [
-    { id: 's-s-1', name: 'Haircut & Styling', prefix: 'HC', avg_service_time: 25 },
-    { id: 's-s-2', name: 'Spa Services', prefix: 'SP', avg_service_time: 45 },
-    { id: 's-s-3', name: 'Nails & Make-up', prefix: 'NM', avg_service_time: 30 }
+    { id: '10000000-0000-0000-0000-000000000011', name: 'Haircut & Styling', prefix: 'HC', avg_service_time: 25 },
+    { id: '10000000-0000-0000-0000-000000000012', name: 'Spa Services', prefix: 'SP', avg_service_time: 45 },
+    { id: '10000000-0000-0000-0000-000000000023', name: 'Nails & Make-up', prefix: 'NM', avg_service_time: 30 }
   ],
   'Restaurants & Food': [
-    { id: 's-r-1', name: 'Dine-In Queue', prefix: 'DI', avg_service_time: 15 },
-    { id: 's-r-2', name: 'Takeaway Queue', prefix: 'TA', avg_service_time: 8 }
+    { id: '10000000-0000-0000-0000-000000000013', name: 'Dine-In Queue', prefix: 'DI', avg_service_time: 15 },
+    { id: '10000000-0000-0000-0000-000000000014', name: 'Takeaway Queue', prefix: 'TA', avg_service_time: 8 }
   ],
   'Default': [
-    { id: 's-d-1', name: 'General Consultation', prefix: 'G', avg_service_time: 15 },
-    { id: 's-d-2', name: 'Express Service', prefix: 'E', avg_service_time: 8 }
+    { id: '10000000-0000-0000-0000-000000000024', name: 'General Consultation', prefix: 'G', avg_service_time: 15 },
+    { id: '10000000-0000-0000-0000-000000000025', name: 'Express Service', prefix: 'E', avg_service_time: 8 }
   ]
 }
+
+export const MOCK_ORGANIZATIONS = [
+  { id: '01111111-1111-1111-1111-111111111111', name: 'Kokilaben Dhirubhai Ambani Hospital', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1' },
+  { id: '02222222-2222-2222-2222-222222222222', name: 'Lilavati Hospital & Research Centre', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1' },
+  { id: '03333333-3333-3333-3333-333333333333', name: 'Nanavati Max Super Speciality Hospital', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1' },
+  { id: '04444444-4444-4444-4444-444444444444', name: 'Hinduja Hospital', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1' },
+  { id: '05555555-5555-5555-5555-555555555555', name: 'Tata Memorial Hospital', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1' },
+  { id: '06666666-6666-6666-6666-666666666666', name: 'SevenHills Hospital', category_id: 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1' },
+  { id: '07777777-7777-7777-7777-777777777777', name: 'State Bank of India', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2' },
+  { id: '08888888-8888-8888-8888-888888888888', name: 'HDFC Bank', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2' },
+  { id: '09999999-9999-9999-9999-999999999999', name: 'ICICI Bank', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2' },
+  { id: '0aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', name: 'Axis Bank', category_id: 'c2c2c2c2-c2c2-c2c2-c2c2-c2c2c2c2c2c2' },
+  { id: '0bbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', name: 'Passport Seva Kendra', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3' },
+  { id: '0ccccccc-cccc-cccc-cccc-cccccccccccc', name: 'Regional Transport Office (RTO)', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3' },
+  { id: '0ddddddd-dddd-dddd-dddd-dddddddddddd', name: 'Municipal Corporation (BMC)', category_id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3' },
+  { id: '0eeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', name: 'IIT Bombay', category_id: 'c4c4c4c4-c4c4-c4c4-c4c4-c4c4c4c4c4c4' },
+  { id: '0fffffff-ffff-ffff-ffff-ffffffffffff', name: "St. Xavier's College", category_id: 'c4c4c4c4-c4c4-c4c4-c4c4-c4c4c4c4c4c4' },
+  { id: '01010101-1010-1010-1010-101010101010', name: 'BBlunt Salon', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5' },
+  { id: '01212121-2121-2121-2121-212121212121', name: 'Enrich Salon', category_id: 'c5c5c5c5-c5c5-c5c5-c5c5-c5c5c5c5c5c5' },
+  { id: '01313131-3131-3131-3131-313131313131', name: 'Cafe Mondegar', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6' },
+  { id: '01414141-1414-1414-1414-141414141414', name: 'Leopold Cafe', category_id: 'c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6' },
+  { id: '01515151-1515-1515-1515-151515151515', name: 'Phoenix Marketcity', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7' },
+  { id: '01616161-1616-1616-1616-161616161616', name: 'Reliance Retail', category_id: 'c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7' },
+  { id: '01717171-1717-1717-1717-171717171717', name: 'Apple India Support', category_id: 'c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c8c8' },
+  { id: '01818181-1818-1818-1818-181818181818', name: 'Reliance Jio Support', category_id: 'c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c8c8' },
+  { id: '01919191-1919-1919-1919-191919191919', name: 'Honda Service Centre', category_id: 'c9c9c9c9-c9c9-c9c9-c9c9-c9c9c9c9c9c9' },
+  { id: '02020202-2020-2020-2020-202020202020', name: 'Tata Motors Service', category_id: 'c9c9c9c9-c9c9-c9c9-c9c9-c9c9c9c9c9c9' },
+  { id: '02121212-2121-2121-2121-212121212121', name: 'Lodha Developers', category_id: 'c10c10c1-0c10-c10c-10c1-0c10c10c10c1' },
+  { id: '02222222-2222-2222-2222-222222222223', name: 'Godrej Properties', category_id: 'c10c10c1-0c10-c10c-10c1-0c10c10c10c1' },
+  { id: '02323232-2323-2323-2323-232323232323', name: "Gold's Gym", category_id: 'c11c11c1-1c11-c11c-11c1-1c11c11c11c1' },
+  { id: '02424242-2424-2424-2424-242424242424', name: 'Mumbai International Airport (Adani)', category_id: 'c12c12c1-2c12-c12c-12c1-2c12c12c12c1' },
+  { id: '02525252-2525-2525-2525-252525252525', name: 'Indian Railways', category_id: 'c12c12c1-2c12-c12c-12c1-2c12c12c12c1' }
+]
 
 export const queueService = {
   // ==========================================================
   // CATEGORY, BRANCH & SERVICE APIS
   // ==========================================================
+
+  getMockOrganizationId(branch) {
+    if (!branch || !branch.name) return '00000000-0000-0000-0000-000000000000'
+    if (branch.name.includes('Kokilaben')) return '01111111-1111-1111-1111-111111111111'
+    if (branch.name.includes('Lilavati')) return '02222222-2222-2222-2222-222222222222'
+    if (branch.name.includes('Nanavati')) return '03333333-3333-3333-3333-333333333333'
+    if (branch.name.includes('Hinduja')) return '04444444-4444-4444-4444-444444444444'
+    if (branch.name.includes('Tata Memorial')) return '05555555-5555-5555-5555-555555555555'
+    if (branch.name.includes('SevenHills')) return '06666666-6666-6666-6666-666666666666'
+    if (branch.name.includes('SBI')) return '07777777-7777-7777-7777-777777777777'
+    if (branch.name.includes('HDFC')) return '08888888-8888-8888-8888-888888888888'
+    if (branch.name.includes('ICICI')) return '09999999-9999-9999-9999-999999999999'
+    if (branch.name.includes('Axis')) return '0aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+    if (branch.name.includes('Passport')) return '0bbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'
+    if (branch.name.includes('RTO')) return '0ccccccc-cccc-cccc-cccc-cccccccccccc'
+    if (branch.name.includes('Municipal')) return '0ddddddd-dddd-dddd-dddd-dddddddddddd'
+    if (branch.name.includes('IIT')) return '0eeeeeee-eeee-eeee-eeee-eeeeeeeeeeee'
+    if (branch.name.includes('Xavier')) return '0fffffff-ffff-ffff-ffff-ffffffffffff'
+    if (branch.name.includes('BBlunt')) return '01010101-1010-1010-1010-101010101010'
+    if (branch.name.includes('Enrich')) return '01212121-2121-2121-2121-212121212121'
+    if (branch.name.includes('Mondegar')) return '01313131-3131-3131-3131-313131313131'
+    if (branch.name.includes('Leopold')) return '01414141-1414-1414-1414-141414141414'
+    if (branch.name.includes('Phoenix')) return '01515151-1515-1515-1515-151515151515'
+    if (branch.name.includes('Reliance')) return '01616161-1616-1616-1616-161616161616'
+    if (branch.name.includes('Apple')) return '01717171-1717-1717-1717-171717171717'
+    if (branch.name.includes('Jio')) return '01818181-1818-1818-1818-181818181818'
+    if (branch.name.includes('Honda')) return '01919191-1919-1919-1919-191919191919'
+    if (branch.name.includes('Tata Motors')) return '02020202-2020-2020-2020-202020202020'
+    if (branch.name.includes('Lodha')) return '02121212-2121-2121-2121-212121212121'
+    if (branch.name.includes('Godrej')) return '02222222-2222-2222-2222-222222222223'
+    if (branch.name.includes('Gold')) return '02323232-2323-2323-2323-232323232323'
+    if (branch.name.includes('Airport')) return '02424242-2424-2424-2424-242424242424'
+    if (branch.name.includes('Railways') || branch.name.includes('Central')) return '02525252-2525-2525-2525-252525252525'
+    return '00000000-0000-0000-0000-000000000000'
+  },
+
+  async getOrganizations() {
+    try {
+      const { data, error } = await supabase
+        .from('organizations')
+        .select('*')
+        .order('name', { ascending: true })
+      if (error) throw error
+      if (!data || data.length === 0) return MOCK_ORGANIZATIONS
+      return data
+    } catch (e) {
+      console.warn('Using fallback mock organizations:', e.message)
+      return MOCK_ORGANIZATIONS
+    }
+  },
+
+  async getBranchesByOrganization(orgId) {
+    try {
+      const { data, error } = await supabase
+        .from('branches')
+        .select('*')
+        .eq('organization_id', orgId)
+        .eq('status', 'active')
+      if (error) throw error
+      if (!data || data.length === 0) {
+        const mapped = MOCK_BRANCHES.map(b => ({ ...b, organization_id: this.getMockOrganizationId(b) }))
+        return mapped.filter(b => b.organization_id === orgId)
+      }
+      return data
+    } catch (e) {
+      console.warn('Using fallback mock branches by org:', e.message)
+      const mapped = MOCK_BRANCHES.map(b => ({ ...b, organization_id: this.getMockOrganizationId(b) }))
+      return mapped.filter(b => b.organization_id === orgId)
+    }
+  },
 
   async getBusinessCategories() {
     try {
@@ -159,25 +262,41 @@ export const queueService = {
     try {
       let query = supabase.from('branches').select('*').eq('status', 'active')
       const { data, error } = await query
-      if (error) throw error
+      if (error) {
+        console.error('[SUPABASE QUERY ERROR] Failed to fetch branches:', error)
+        throw error
+      }
 
-      if (!data || data.length === 0 || data[0].latitude === undefined) {
-        let filtered = MOCK_BRANCHES
-        if (categoryId) {
+      const totalCount = data ? data.length : 0
+      console.log(`[BRANCHES] Total fetched from Supabase: ${totalCount}`)
+      
+      if (data && data.length > 0) {
+        data.forEach(b => {
+          console.log(`[BRANCH DATA] ID: ${b.id} | Name: "${b.name}" | Lat: ${b.latitude} | Lng: ${b.longitude} | Address: "${b.address}"`)
+        })
+      }
+
+      if (!data || data.length === 0) {
+        console.warn('[SUPABASE QUERY] No active branches in DB, fallback to mock branches.')
+        const mapped = MOCK_BRANCHES.map(b => ({ ...b, organization_id: this.getMockOrganizationId(b) }))
+        let filtered = mapped
+        if (categoryId && categoryId !== 'all') {
           filtered = filtered.filter(b => b.category_id === categoryId)
         }
         return filtered
       }
 
       let filteredData = data
-      if (categoryId) {
+      if (categoryId && categoryId !== 'all') {
         filteredData = data.filter(b => b.category_id === categoryId)
+        console.log(`[BRANCHES] Filtered for categoryId "${categoryId}": ${filteredData.length} branches remaining.`)
       }
       return filteredData
     } catch (e) {
-      console.warn('Using fallback mock branches:', e.message)
-      let filtered = MOCK_BRANCHES
-      if (categoryId) {
+      console.warn('[SUPABASE QUERY] Fallback to mock branches:', e.message)
+      const mapped = MOCK_BRANCHES.map(b => ({ ...b, organization_id: this.getMockOrganizationId(b) }))
+      let filtered = mapped
+      if (categoryId && categoryId !== 'all') {
         filtered = filtered.filter(b => b.category_id === categoryId)
       }
       return filtered
@@ -218,7 +337,12 @@ export const queueService = {
   // CUSTOMER APIS
   // ==========================================================
 
-  async joinQueue(branchId, serviceId, userId, priority = 'normal') {
+  async joinQueue(branchId, serviceId, userId, priority = 'normal', organizationId = null) {
+    console.log({
+      selectedBranchId: branchId,
+      selectedServiceId: serviceId,
+      selectedOrganizationId: organizationId
+    })
     try {
       const { data, error } = await supabase.rpc('generate_next_token', {
         p_branch_id: branchId,
@@ -262,21 +386,13 @@ export const queueService = {
   },
 
   async getActiveToken(userId) {
-    const localTokenStr = localStorage.getItem(`mock_active_token_${userId}`)
-    if (localTokenStr) {
-      try {
-        return JSON.parse(localTokenStr)
-      } catch (e) {
-        localStorage.removeItem(`mock_active_token_${userId}`)
-      }
-    }
-
+    if (!userId) return null
     try {
       const { data, error } = await supabase
         .from('queues')
         .select('*, services(name), counters!queues_counter_id_fkey(name, number)')
         .eq('user_id', userId)
-        .in('status', ['waiting', 'serving'])
+        .in('status', ['waiting', 'serving', 'approved'])
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle()
@@ -290,19 +406,19 @@ export const queueService = {
   },
 
   async getTokenHistory(userId) {
+    if (!userId) return []
     try {
       const { data, error } = await supabase
         .from('queues')
         .select('*, services(name), counters!queues_counter_id_fkey(name, number)')
         .eq('user_id', userId)
-        .in('status', ['completed', 'skipped', 'cancelled'])
+        .in('status', ['completed', 'skipped', 'cancelled', 'rejected'])
         .order('created_at', { ascending: false })
       if (error) throw error
-      return data
+      return data || []
     } catch (error) {
       console.warn('Queue history fetch from DB failed:', error.message)
-      const mockHistoryStr = localStorage.getItem(`mock_history_${userId}`)
-      return mockHistoryStr ? JSON.parse(mockHistoryStr) : []
+      return []
     }
   },
 
@@ -402,6 +518,207 @@ export const queueService = {
     return data
   },
 
+  async completeCurrentToken(counterId, tokenId = null) {
+    try {
+      let targetTokenId = tokenId
+      if (!targetTokenId) {
+        const { data: counter, error: cErr } = await supabase
+          .from('counters')
+          .select('current_token_id')
+          .eq('id', counterId)
+          .maybeSingle()
+
+        if (cErr) throw cErr
+        targetTokenId = counter?.current_token_id
+      }
+
+      if (!targetTokenId) {
+        console.warn('[STAFF DB] No active token found to complete for counter:', counterId)
+        throw new Error('No active token is currently assigned to this counter.')
+      }
+
+      console.log('[STAFF DB] Updating queue token status to completed for token:', targetTokenId)
+
+      const { data: queueRecord, error: qErr } = await supabase
+        .from('queues')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', targetTokenId)
+        .select('*, services(name), branches(name)')
+        .single()
+
+      if (qErr) {
+        console.error('[STAFF DB] Error updating queue status to completed:', qErr)
+        throw qErr
+      }
+
+      const { error: cntErr } = await supabase
+        .from('counters')
+        .update({
+          current_token_id: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', counterId)
+
+      if (cntErr) {
+        console.warn('[STAFF DB] Error clearing counter current_token_id:', cntErr)
+      }
+
+      console.log('[STAFF DB] Complete Service Success:', queueRecord)
+      return queueRecord
+    } catch (e) {
+      console.error('[STAFF DB] completeCurrentToken exception:', e)
+      throw e
+    }
+  },
+
+  async skipCurrentToken(counterId, tokenId = null) {
+    try {
+      let targetTokenId = tokenId
+      if (!targetTokenId) {
+        const { data: counter, error: cErr } = await supabase
+          .from('counters')
+          .select('current_token_id')
+          .eq('id', counterId)
+          .maybeSingle()
+
+        if (cErr) throw cErr
+        targetTokenId = counter?.current_token_id
+      }
+
+      if (!targetTokenId) {
+        throw new Error('No active token is currently assigned to this counter.')
+      }
+
+      console.log('[STAFF DB] Updating queue token status to skipped for token:', targetTokenId)
+
+      const { data: queueRecord, error: qErr } = await supabase
+        .from('queues')
+        .update({
+          status: 'skipped',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', targetTokenId)
+        .select('*, services(name)')
+        .single()
+
+      if (qErr) throw qErr
+
+      await supabase
+        .from('counters')
+        .update({
+          current_token_id: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', counterId)
+
+      console.log('[STAFF DB] Skip Service Success:', queueRecord)
+      return queueRecord
+    } catch (e) {
+      console.error('[STAFF DB] skipCurrentToken exception:', e)
+      throw e
+    }
+  },
+
+  async transferToken(tokenId, targetServiceId) {
+    try {
+      console.log('[STAFF DB] Transferring token:', tokenId, 'to service:', targetServiceId)
+
+      const { data: queueRecord, error: qErr } = await supabase
+        .from('queues')
+        .update({
+          service_id: targetServiceId,
+          counter_id: null,
+          status: 'waiting',
+          called_at: null
+        })
+        .eq('id', tokenId)
+        .select()
+        .single()
+
+      if (qErr) throw qErr
+      console.log('[STAFF DB] Transfer Token Success:', queueRecord)
+      return queueRecord
+    } catch (e) {
+      console.error('[STAFF DB] transferToken exception:', e)
+      throw e
+    }
+  },
+
+  async approveToken(tokenId) {
+    try {
+      const { data, error } = await supabase
+        .from('queues')
+        .select('*, profiles(id, full_name, email)')
+        .eq('id', tokenId)
+        .single()
+      
+      if (error) throw error
+
+      if (data && data.user_id) {
+        await supabase.from('notifications').insert({
+          user_id: data.user_id,
+          title: 'Queue Token Approved',
+          message: `Your token ${data.token_number} has been approved by staff.`,
+          type: 'queue'
+        })
+      }
+      return data
+    } catch (e) {
+      console.error('approveToken error:', e)
+      throw e
+    }
+  },
+
+  async rejectToken(tokenId) {
+    try {
+      const { data, error } = await supabase
+        .from('queues')
+        .update({ status: 'cancelled' })
+        .eq('id', tokenId)
+        .select()
+        .single()
+      
+      if (error) throw error
+
+      if (data && data.user_id) {
+        await supabase.from('notifications').insert({
+          user_id: data.user_id,
+          title: 'Queue Ticket Declined',
+          message: `Your token ${data.token_number} request was declined.`,
+          type: 'queue'
+        })
+      }
+      return data
+    } catch (e) {
+      console.error('rejectToken error:', e)
+      throw e
+    }
+  },
+
+  async getBranchQueues(branchId) {
+    try {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
+      const { data, error } = await supabase
+        .from('queues')
+        .select('*, services(name, prefix), profiles(full_name, email)')
+        .eq('branch_id', branchId)
+        .in('status', ['waiting', 'serving'])
+        .gte('created_at', today.toISOString())
+        .order('created_at', { ascending: true })
+
+      if (error) throw error
+      return data || []
+    } catch (e) {
+      console.warn('getBranchQueues error:', e)
+      return []
+    }
+  },
+
   async callNextToken(counterId, staffId) {
     const { data, error } = await supabase.rpc('call_next_token', {
       p_counter_id: counterId,
@@ -411,29 +728,81 @@ export const queueService = {
     return data
   },
 
-  async completeCurrentToken(counterId) {
-    const { data, error } = await supabase.rpc('complete_current_token', {
-      p_counter_id: counterId,
-    })
-    if (error) throw error
-    return data
+  async callSpecificToken(tokenId, counterId, staffId) {
+    try {
+      const { data: counterData, error: cErr } = await supabase
+        .from('counters')
+        .update({
+          staff_id: staffId,
+          status: 'open',
+          current_token_id: tokenId,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', counterId)
+        .select()
+        .single()
+      
+      if (cErr) throw cErr
+
+      const { data: queueData, error: qErr } = await supabase
+        .from('queues')
+        .update({
+          status: 'serving',
+          counter_id: counterId,
+          called_at: new Date().toISOString()
+        })
+        .eq('id', tokenId)
+        .select('*, services(name)')
+        .single()
+
+      if (qErr) throw qErr
+
+      if (queueData && queueData.user_id) {
+        await supabase.from('notifications').insert({
+          user_id: queueData.user_id,
+          title: 'Your Turn!',
+          message: `Token ${queueData.token_number} please proceed to ${counterData.name || 'Counter'}`,
+          type: 'queue'
+        })
+      }
+
+      return queueData
+    } catch (e) {
+      console.error('callSpecificToken error:', e)
+      throw e
+    }
   },
 
-  async skipCurrentToken(counterId) {
-    const { data, error } = await supabase.rpc('skip_current_token', {
-      p_counter_id: counterId,
-    })
-    if (error) throw error
-    return data
-  },
+  async startService(tokenId, counterId) {
+    console.log('[STAFF] Starting service for token:', tokenId)
+    try {
+      const { data: queueData, error: qErr } = await supabase
+        .from('queues')
+        .update({
+          status: 'serving',
+          counter_id: counterId
+        })
+        .eq('id', tokenId)
+        .select('*, services(name), branches(name)')
+        .single()
 
-  async transferToken(tokenId, targetServiceId) {
-    const { data, error } = await supabase.rpc('transfer_token', {
-      p_token_id: tokenId,
-      p_target_service_id: targetServiceId,
-    })
-    if (error) throw error
-    return data
+      if (qErr) throw qErr
+      console.log('[STAFF] Queue status changed to serving')
+
+      if (queueData && queueData.user_id) {
+        await supabase.from('notifications').insert({
+          user_id: queueData.user_id,
+          title: 'Service In Progress',
+          message: `Service for Token ${queueData.token_number} has started.`,
+          type: 'queue'
+        })
+      }
+
+      return queueData
+    } catch (e) {
+      console.error('[STAFF] startService error:', e)
+      throw e
+    }
   },
 
   async getDailyStats(branchId) {
@@ -481,7 +850,8 @@ export const queueService = {
         avgServiceTime
       }
     } catch (e) {
-      return { total: 0, waiting: 0, serving: 0, completed: 0, skipped: 0, avgServiceTime: 0 }
+      console.warn('Database stats failed, returning offline mock stats:', e.message)
+      return { total: 15, waiting: 5, serving: 1, completed: 8, skipped: 1, avgServiceTime: 12 }
     }
   },
 
